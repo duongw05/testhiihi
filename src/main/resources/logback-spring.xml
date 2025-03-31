@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProperty scope="context" name="springAppName" source="spring.application.name"/>
+    <property scope="context" name="log.fileExtension" value="log"/>
+    <property scope="context" name="log.fileName" value="${BUILD_FOLDER:-logs}/${springAppName}"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{36}.%M - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.fileName}.${log.fileExtension}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.fileName}.%d{yyyy-MM-dd}.${log.fileExtension}</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS, Europe/Istanbul}] [${HOSTNAME}] [%thread] %level %logger{36}@%method:%line - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+<!--    <springProfile name="!dev">-->
+<!--        <appender name="STASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">-->
+<!--            <destination>20.0.0.111:8452</destination>-->
+<!--            &lt;!&ndash; encoder is required &ndash;&gt;-->
+<!--            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">-->
+<!--                <providers>-->
+<!--                    <mdc />-->
+<!--                    <context />-->
+<!--                    <logLevel />-->
+<!--                    <loggerName />-->
+<!--                    <threadName />-->
+<!--                    <message />-->
+<!--                    <logstashMarkers />-->
+<!--                    <stackTrace />-->
+<!--                </providers>-->
+<!--            </encoder>-->
+<!--            <keepAliveDuration>5 minutes</keepAliveDuration>-->
+<!--        </appender>-->
+<!--        <logger name="org.hibernate" level="ERROR">-->
+<!--            <appender-ref ref="STASH"/>-->
+<!--        </logger>-->
+
+<!--        <root level="ERROR">-->
+<!--            <appender-ref ref="STASH"/>-->
+<!--        </root>-->
+<!--        <root level="INFO">-->
+<!--            <appender-ref ref="STASH"/>-->
+<!--        </root>-->
+<!--    </springProfile>-->
+
+    <root level="ERROR">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

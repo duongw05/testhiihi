@@ -1,0 +1,136 @@
+version: '2'
+services:
+  tang-thu-api-services:
+    image: registry.nodo.vn/c09-tang-thu/tangthu-be:latest
+    restart: always
+    labels:
+      filebeat_enable: true
+    ports:
+      - "8448:8448"
+    volumes:
+      - tang_thu_be_log_volume:/logs
+      - tang_thu_be_data_volume:/app
+    networks:
+      - tangthu_net
+  tang-thu-web-services:
+    image: registry.nodo.vn/c09-tang-thu/tangthu-fe:latest
+    restart: always
+    ports:
+      - "8449:8449"
+    networks:
+      - tangthu_net
+  redis:
+    image: redis:alpine
+    container_name: redis-server
+    restart: always
+    volumes:
+      - redis_volume_data:/data
+    ports:
+      - 8450:6379
+  redis_insight:
+    image: redislabs/redisinsight:1.14.0
+    container_name: redis_insight
+    restart: always
+    ports:
+      - 8001:8001
+    volumes:
+      - redis_insight_volume_data:/db
+    networks:
+      - tangthu_net
+  elasticsearch:
+    image: elasticsearch:8.11.3
+    container_name: elasticsearch-server
+    #    volumes:
+    #      - ./elk/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - "8451:9200"
+    environment:
+      - discovery.type=single-node
+      - cluster.name=tang-thu-elasticsearch
+      # Since ES 8, SSL is on by default, disabling on local
+      - xpack.security.enabled=false
+    networks:
+      - tangthu_net
+  kibana:
+    container_name: kb-container
+    image: docker.elastic.co/kibana/kibana:8.11.3
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch-server:9200
+    #    volumes:
+    #      - ./elk/kibana/:/usr/share/kibana/config/
+    networks:
+      - tangthu_net
+    depends_on:
+      - elasticsearch
+    ports:
+      - 5601:5601
+  filebeat:
+    image: elastic/filebeat:8.11.3
+    container_name: filebeat
+    user: root
+    command: [ "filebeat", "-e", "--strict.perms=false" ]
+    volumes:
+      - ./elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      # needed to access all docker logs :
+      - "/var/lib/docker/containers:/var/lib/docker/containers"
+      # needed to access additional information about containers
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - tangthu_net
+    depends_on:
+      - elasticsearch
+      - kibana
+  logstash:
+    image: logstash:8.11.3
+    container_name: logstash
+    command: -f /etc/logstash/conf.d/
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    ports:
+      - "8452:5044"
+      - "8453:9600"
+    volumes:
+      - ./elk/logstash/:/etc/logstash/conf.d/
+      - ./elk/drivers/:/etc/logstash/tang-thu-drivers/
+    #      - /home/docker_file/volumes/tang-thu_tang_thu_be_log_volume/_data/vn.nodo.c09.tangthu.log:/tmp/logs/vn.nodo.c09.tangthu.log
+    networks:
+      - tangthu_net
+    depends_on:
+      - elasticsearch
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: some-rabbit
+    hostname: my-rabbit
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    restart: always
+  ordatabase:
+    image: container-registry.oracle.com/database/express:latest
+    hostname: database
+    ports:
+      - 1522:1521
+      - 5501:5500
+    environment:
+      - ORACLE_PWD=N0do.2024
+      - ORACLE_PDB=OR_TANG_THU
+      - ORACLE_CHARACTERSET=AL32UTF8
+      - TZ=Asia/Ho_Chi_Minh
+    volumes:
+      - oracle_oradata:/opt/oracle/oradata
+      #   - ./oracle_startup:/opt/oracle/scripts/startup
+      #   - ./oracle_setup:/opt/oracle/scripts/setup
+
+
+networks:
+  tangthu_net:
+    driver: bridge
+volumes:
+  redis_volume_data:
+  tang_thu_be_log_volume:
+  redis_insight_volume_data:
+  tang_thu_be_data_volume:
+  oracle_oradata:
