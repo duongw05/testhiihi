@@ -1,0 +1,4 @@
+export const DASHBOARD_LIST_TYPE = {
+    NOT_CHECK_IN: 'NOT_CHECK_IN',
+    NOT_ENOUGH: 'NOT_ENOUGH'
+}

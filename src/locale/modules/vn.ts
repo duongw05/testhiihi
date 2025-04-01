@@ -1,0 +1,168 @@
+import locale from 'element-plus/dist/locale/vi.mjs'
+import {dashboard} from "@/locale/modules/dashboard/dashboard_vn";
+import {settings} from "@/locale/modules/settings/settings_vn";
+
+const lang = {
+    el: locale.el, // element-plus i18 setting
+    message: {
+        language: 'Tiếng Việt',
+        common: {
+            search: 'Tìm kiếm',
+            searchTip: 'please input keyword',
+            add: 'add',
+            update: 'update',
+            del: 'delete',
+            delBat: 'delete choose',
+            delTip: 'Are you sure delete the selection data ?',
+            handle: 'handle',
+            importData: 'Nhập dữ liệu chấm công',
+            exportExcel:'Xuất dữ liệu chấm công',
+            exportExcelTip:'please input file name',
+            login: 'Đăng nhập thành công'
+        },
+        menu: {
+            ...dashboard,
+            ...settings,
+            system: {
+                name: 'Hệ thống',
+                redirect: 'redirect',
+                '404': '404',
+                '401': '401'
+            },
+            component: {
+                name: 'component',
+                button: 'button',
+                wordEditor: 'wordEditor',
+                mdEditor: 'mdEditor',
+                codeEditor: 'codeEditor',
+                jsonEditor: 'jsonEditor',
+                dragPane: 'dragPane',
+                map: 'map',
+                cutPhoto: 'cutPhoto',
+                rightMenu: 'rightMenu',
+                exportExcel:'exportExcel'
+            },
+            page: {
+                name: 'page',
+                crudTable: 'crudTable',
+                categoryTable: 'categoryTable',
+                treeTable: 'treeTable',
+                card: 'card',
+                work: 'work',
+                baidu: 'iframe case',
+                jump: 'open in new window'
+            },
+            directive: {
+                name: 'directive',
+                dragable: 'v-dragable',
+                copy: 'v-copy',
+                waterMarker: 'v-waterMarker',
+                longpress: 'v-longpress',
+                debounce: 'v-debounce',
+                scroll: 'v-infinite-scroll',
+                clickOutside: 'v-click-outside',
+            },
+            echarts: {
+                name: 'echarts',
+                bar: 'bar',
+                line: 'line chart',
+                pie: 'pie chart',
+                radar: 'radar chart',
+                map: 'map',
+            },
+            systemManage: {
+                name: 'systemManage',
+                menu: 'menu',
+                role: 'role',
+                user: 'user'
+            },
+            document: {
+                name: 'document',
+                intro: 'intro',
+                function: 'function',
+                menu: 'diy route menus',
+                keepAlive: 'how to use keepAlive',
+                crud: 'crud table and form',
+                theme: 'how to diy your theme',
+                systemfont: 'icon in project',
+                api: 'api document'
+            },
+            tab: {
+                name: 'tab',
+            },
+        },
+        system: {
+            title: 'QLBH',
+            subTitle: 'few lines to write beautiful admin',
+            welcome: 'Chào mừng đến trang đăng nhập',
+            login: 'Đăng Nhập',
+            userName: 'Tài khoản',
+            password: 'Mật khẩu',
+            newPassword: 'Mật khẩu mới',
+            confirmPassword: 'Xác nhận lại mật khẩu',
+            userNameValidate: 'Tài khoản không được để trống',
+            passwordValidate: 'Mật khẩu không được để trống',
+            newPasswordValidate: 'Mật khẩu mới không được để trống',
+            confPasswordValidate: 'Xác nhận mật khẩu không được để trống',
+            captchaValidate: 'Captcha không được để trống',
+            captchaCheck: 'Captcha không hợp lệ',
+            checkConfPassword: 'Xác nhận mật khẩu không hợp lệ',
+            contentScreen: 'content full screen',
+            fullScreen: 'fullscreen',
+            fullScreenBack: 'back fullscreen',
+            github: 'visit github',
+            changePassword: 'Đổi mật khẩu',
+            forgotPassword: 'Quên mật khẩu',
+            captcha: 'Nhập mã captcha',
+            loginOut: 'Đăng xuất',
+            user: 'admin',
+            oops: 'Trang không tồn tại !!!',
+            oops_info: 'Vui lòng kiểm tra xem URL bạn đã nhập có chính xác không hoặc nhấp vào nút bên dưới để quay lại trang chủ',
+            oops_go: 'Chuyển đến trang chủ',
+            size: {
+                default: 'default',
+                large: 'large',
+                small: 'small',
+            },
+            setting: {
+                name: 'Cài đặt',
+                style: {
+                    name: 'full style setting',
+                    default: 'default menu style',
+                    light: 'light menu style',
+                    chinese: 'chinese menu style',
+                    dark: 'dark menu style'
+                },
+                primaryColor: {
+                    name: 'primary color',
+                    blue: 'default blue',
+                    red: 'rose red',
+                    violet: 'grace violet',
+                    green: 'story green',
+                    cyan: 'cyan',
+                    black: 'geek black'
+                },
+                other: {
+                    name: 'other setting',
+                    showLogo: 'show logo',
+                    showBreadcrumb: 'show breadcrumb',
+                    keepOnlyOneMenu: 'keep only one menu open',
+                }
+            },
+            tab: {
+                reload: 'Làm mới',
+                closeAll: 'Đóng tất cả các trang',
+                closeOther: 'Đóng tất cả trang khác',
+                closeCurrent: 'Đóng trang hiện tại'
+            }
+        },
+    },
+    validate: {
+        required: '{name} không được để trống',
+        max: '{name} không lớn hơn {value} ký tự',
+        min: '{name} phải nhỏ hơn {value} ký tự',
+        regex: '{name} không đúng định dạng'
+    }
+}
+
+export default lang

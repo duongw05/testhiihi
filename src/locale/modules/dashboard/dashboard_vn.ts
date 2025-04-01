@@ -1,0 +1,26 @@
+export const dashboard = {
+    dashboard: {
+        name: 'Dashboard',
+        index: 'Dashboard',
+        labelSelect: 'Tuần',
+        tableEmployeeName: 'Tên nhân viên',
+        tableAttendanceDate: 'Ngày chấm công',
+        tableTotalMinute: 'Số phút',
+        btnCreateAccount: 'Thêm mới tài khoản',
+        employeeStatistics: 'Thống kê nhân viên',
+        timekeepingStatistics: 'Thống kê chấm công',
+        totalStaff: 'Tổng nhân viên',
+        birthdayOnMonth: 'Sinh nhật trong tháng',
+        onWorking: 'Đang làm việc',
+        onRetired: 'Đã nghỉ việc',
+        onTime: 'Đúng giờ',
+        notCheckIn: 'Chưa chấm công',
+        late: 'Đến muộn',
+        addNewEmployeeBtn: 'Thêm nhân viên',
+        chooseWeek: 'Chọn tuần',
+        chooseMonth: 'Chọn tháng',
+        listWithoutTimekeeping: 'Danh sách nhân viên không chấm công',
+        listInsufficientWorkingHours: 'Danh sách nhân viên không đủ giờ làm',
+        weeklyAttendanceStatistics: 'Thống kê chấm công hàng tuần',
+    }
+}

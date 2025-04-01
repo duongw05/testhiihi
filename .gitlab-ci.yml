@@ -1,0 +1,28 @@
+image: docker
+services:
+  - docker:dind
+
+variables:
+  APP_IMAGE: noffice-fe
+  DOCKER_TAG: $CI_COMMIT_SHORT_SHA
+
+stages:
+  - docker
+
+docker-clean:
+  stage: docker
+  script:
+  - echo " STOP current container of services"
+  - docker stop $APP_IMAGE
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop_test"
+
+deploy-docker:
+  stage: docker
+  script:
+    - echo " BUILD docker image new version of service"
+    - docker build -t $APP_IMAGE:$DOCKER_TAG .
+    - docker run -d -p 9001:9001 -p 9011:443 --rm --name $APP_IMAGE $APP_IMAGE:$DOCKER_TAG
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop_test"

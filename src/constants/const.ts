@@ -1,0 +1,23 @@
+export const DM_STATUS  = 'DM_STATUS';
+export const DM_STATUS_COMMON  = 'DM_STATUS_COMMON';
+export const DM_TYPE_IDENTIFICATION  = 'DM_TYPE_IDENTIFICATION';
+export const DM_PARTNER_TYPE  = 'DM_PARTNER_TYPE';
+export const SYSTEM_CUSTOMER_TYPE  = 'SYSTEM_CUSTOMER_TYPE';
+export const PRODUCT_GROUP_ID  = 'PRODUCT_GROUP_ID';
+export const PRODUCT_TYPE  = 'PRODUCT_TYPE';
+export const BCCS_TRANS_CODE  = 'BCCS_TRANS_CODE';
+export const BCCS_TRANS_ID  = 'BCCS_TRANS_ID';
+export const SYSTEM_FEATURE  = 'SYSTEM_FEATURE';
+export const SYSTEM_CONFIG_REQUIRE  = 'SYSTEM_CONFIG_REQUIRE';
+export const SYSTEM_CONFIG_TYPE  = 'SYSTEM_CONFIG_TYPE';
+export const CLASS_RUN_JOB  = 'CLASS_RUN_JOB'; // Class thuc thi tien trinh
+export const STATUS_PROCESS_JOB  = 'STATUS_PROCESS_JOB'; // Trang thai tien trinh
+export const PROCESS_JOB_GROUP  = 'PROCESS_JOB_GROUP'; // Nhom tien trinh
+export const PROCESS_CRON_JOB  = 'PROCESS_CRON_JOB'; // Cronjob  loai cron
+export const PRODUCT_OFFER_TYPE  = 'PRODUCT_OFFER_TYPE';
+export const PROVISION_TYPE  = 'PROVISION_TYPE';
+export const ALLOCATE_TYPE  = 'ALLOCATE_TYPE';
+
+export const PARTNER_UPLOAD = "PARTNER";
+export const CUSTOMER_UPLOAD = "CUSTOMER";
+export const PRODUCT_UPLOAD = "PRODUCT";

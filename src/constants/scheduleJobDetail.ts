@@ -1,0 +1,4 @@
+export const STATUS_SCHEDULE_JOB_DETAIL = {
+    ACTIVE: 'ACTIVE',
+    PAUSED: 'PAUSED'
+}

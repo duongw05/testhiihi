@@ -1,0 +1,26 @@
+export const dashboard = {
+    dashboard: {
+        name: 'Dashboard',
+        index: 'Dashboard',
+        labelSelect: 'Week',
+        tableEmployeeName: 'Employee Name',
+        tableAttendanceDate: 'Attendance Date',
+        tableTotalMinute: 'Total Minute',
+        btnCreateAccount: 'Create New Account',
+        employeeStatistics: 'Employees Statistics',
+        timekeepingStatistics: 'Timekeeping Statistics',
+        totalStaff: 'Total Employees',
+        birthdayOnMonth: 'Birthday on Month',
+        onWorking: 'Working',
+        onRetired: 'Retired',
+        onTime: 'On time',
+        notCheckIn: 'Not check in yet',
+        late: 'Late',
+        addNewEmployeeBtn: 'Add new employee',
+        chooseWeek: 'Choose Week',
+        chooseMonth: 'Choose Month',
+        listWithoutTimekeeping: 'List of employees without timekeeping',
+        listInsufficientWorkingHours: 'List of employees with insufficient working hours',
+        weeklyAttendanceStatistics: 'Weekly Attendance Statistics',
+    }
+}
