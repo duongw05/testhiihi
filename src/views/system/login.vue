@@ -124,7 +124,7 @@ export default defineComponent({
                   })
                   // console.log("store", localStorage.getItem('vuex'))
                   setTimeout(async () => {
-                    await getAuthRoutes()
+                    // await getAuthRoutes()
                     await router.push("/dashboard")
                   }, 200)
                   // await router.push(route.query.redirect as RouteLocationRaw || '/')

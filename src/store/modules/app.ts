@@ -39,7 +39,7 @@ const state = () => ({
   theme: {
     state: {
       style: 'light',
-      primaryColor: '#EE0033',
+      primaryColor: '#4dc86f',
       menuType: 'side'
     }
   },

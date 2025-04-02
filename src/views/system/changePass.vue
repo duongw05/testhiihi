@@ -141,7 +141,7 @@
           </el-row>
         </el-form>
         <el-button class="login100-form-btn" style="width: 100%; margin-top: 20px"
-                   color="#EE0033"
+                   color="#4dc86f"
                    @click="fnChangePassword"
                    :loading="form.loading"
                    type="primary"
@@ -254,7 +254,7 @@ export default defineComponent({
     const router = useRouter()
     let {locale, t} = useI18n()
     let showPopover = ref(false)
-    const svg = '<radialGradient id="a7" cx=".66" fx=".66" cy=".3125" fy=".3125" gradientTransform="scale(1.5)"><stop offset="0" stop-color="#EE0033"></stop><stop offset=".3" stop-color="#EE0033" stop-opacity=".9"></stop><stop offset=".6" stop-color="#EE0033" stop-opacity=".6"></stop><stop offset=".8" stop-color="#EE0033" stop-opacity=".3"></stop><stop offset="1" stop-color="#EE0033" stop-opacity="0"></stop></radialGradient><circle transform-origin="center" fill="none" stroke="url(#a7)" stroke-width="15" stroke-linecap="round" stroke-dasharray="200 1000" stroke-dashoffset="0" cx="100" cy="100" r="70"><animateTransform type="rotate" attributeName="transform" calcMode="spline" dur="2.5" values="360;0" keyTimes="0;1" keySplines="0 0 1 1" repeatCount="indefinite"></animateTransform></circle><circle transform-origin="center" fill="none" opacity=".2" stroke="#EE0033" stroke-width="15" stroke-linecap="round" cx="100" cy="100" r="70"></circle>'
+    const svg = '<radialGradient id="a7" cx=".66" fx=".66" cy=".3125" fy=".3125" gradientTransform="scale(1.5)"><stop offset="0" stop-color="#4dc86f"></stop><stop offset=".3" stop-color="#4dc86f" stop-opacity=".9"></stop><stop offset=".6" stop-color="#4dc86f" stop-opacity=".6"></stop><stop offset=".8" stop-color="#4dc86f" stop-opacity=".3"></stop><stop offset="1" stop-color="#4dc86f" stop-opacity="0"></stop></radialGradient><circle transform-origin="center" fill="none" stroke="url(#a7)" stroke-width="15" stroke-linecap="round" stroke-dasharray="200 1000" stroke-dashoffset="0" cx="100" cy="100" r="70"><animateTransform type="rotate" attributeName="transform" calcMode="spline" dur="2.5" values="360;0" keyTimes="0;1" keySplines="0 0 1 1" repeatCount="indefinite"></animateTransform></circle><circle transform-origin="center" fill="none" opacity=".2" stroke="#4dc86f" stroke-width="15" stroke-linecap="round" cx="100" cy="100" r="70"></circle>'
     const form = reactive({
       name: '',
       password: '',

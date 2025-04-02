@@ -1,28 +1,28 @@
 <template>
-  <div :title="$t('message.system.setting.name')" @click="drawerChange(true)" class="item_option">
-    <el-icon>
-      <Setting/>
-    </el-icon>
-  </div>
-  <el-drawer
-      :title="'Cài đặt hệ thống'"
-      v-model="drawer"
-      size="300px"
-      :show-close="false"
-      direction="rtl">
-    <template v-for="item in lstOptions">
-      <div class="lst_menu">
-        <label style="font-size: 14px; font-weight: bold">{{ item.label }}</label>
-        <hr>
-        <template v-if="item.optionsChild" v-for="itemChild in item.optionsChild">
-          <el-button v-if="itemChild.label" class="theme-box" :icon="itemChild.icon" size="default" type="text"
-                     :disabled="itemChild.isDisable" @click="selectOption(itemChild.event)">
-            {{ itemChild.label }}
-          </el-button>
-        </template>
-      </div>
-    </template>
-  </el-drawer>
+<!--  <div :title="$t('message.system.setting.name')" @click="drawerChange(true)" class="item_option">-->
+<!--    <el-icon>-->
+<!--      <Setting/>-->
+<!--    </el-icon>-->
+<!--  </div>-->
+<!--  <el-drawer-->
+<!--      :title="'Cài đặt hệ thống'"-->
+<!--      v-model="drawer"-->
+<!--      size="300px"-->
+<!--      :show-close="false"-->
+<!--      direction="rtl">-->
+<!--    <template v-for="item in lstOptions">-->
+<!--      <div class="lst_menu">-->
+<!--        <label style="font-size: 14px; font-weight: bold">{{ item.label }}</label>-->
+<!--        <hr>-->
+<!--        <template v-if="item.optionsChild" v-for="itemChild in item.optionsChild">-->
+<!--          <el-button v-if="itemChild.label" class="theme-box" :icon="itemChild.icon" size="default" type="text"-->
+<!--                     :disabled="itemChild.isDisable" @click="selectOption(itemChild.event)">-->
+<!--            {{ itemChild.label }}-->
+<!--          </el-button>-->
+<!--        </template>-->
+<!--      </div>-->
+<!--    </template>-->
+<!--  </el-drawer>-->
 </template>
 
 <script lang="ts">
@@ -154,9 +154,9 @@ export default defineComponent({
     })
     const themeColorArr = [
       // { color: '#409eff', textColor: '#fff', tip: 'message.system.setting.primaryColor.blue' },
-      {color: '#EE0033', textColor: '#fff', tip: 'message.system.setting.primaryColor.red'},
+      // {color: '#EE0033', textColor: '#fff', tip: 'message.system.setting.primaryColor.red'},
       // { color: '#ac25e6', textColor: '#fff', tip: 'message.system.setting.primaryColor.violet' },
-      // { color: '#4dc86f', textColor: '#fff', tip: 'message.system.setting.primaryColor.green' },
+      { color: '#4dc86f', textColor: '#fff', tip: 'message.system.setting.primaryColor.green' },
       // { color: '#13c2c2', textColor: '#fff', tip: 'message.system.setting.primaryColor.cyan' },
       // { color: '#333', textColor: '#fff', tip: 'message.system.setting.primaryColor.black' }
     ]

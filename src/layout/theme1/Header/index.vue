@@ -11,7 +11,7 @@
 <!--        <div class="function-list-item hidden-sm-and-down"><Full-screen /></div>-->
 <!--        <div class="function-list-item"><Word /></div>-->
 <!--        <div class="function-list-item"><SizeChange /></div>-->
-        <div class="function-list-item hidden-sm-and-down"></div>
+        <div class="function-list-item hidden-sm-and-down"><Theme /></div>
       </div>
       <div class="user-info">
         <el-dropdown>

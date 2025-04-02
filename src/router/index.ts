@@ -26,7 +26,6 @@ const whiteList = ['/login', '/changePassword', '/forgotPassword']
 router.beforeEach(async (to, _from, next) => {
     NProgress.start();
     to.meta.title ? (changeTitle(to.meta.title)) : "" // 动态title
-    next()
     if (store.state.user.token) {
         to.meta.title ? (changeTitle(to.meta.title)) : "" // 动态title
         console.log("to", to)

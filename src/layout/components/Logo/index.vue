@@ -1,6 +1,6 @@
 <template>
   <div class="logo-container">
-<!--    <img src="@/assets/logo/logo.png" alt="">-->
+    <img src="@/assets/logo/mini_logo.png" alt="">
     <h1 style="margin-left: 5px;margin-bottom: 0px;" v-if="!isCollapse" @click="go">{{ $t(systemTitle) }}</h1>
   </div>
 </template>
