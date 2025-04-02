@@ -92,7 +92,7 @@ const lang = {
             },
         },
         system: {
-            title: 'QLBH',
+            title: 'Language Link',
             subTitle: 'few lines to write beautiful admin',
             welcome: 'Chào mừng đến trang đăng nhập',
             login: 'Đăng Nhập',

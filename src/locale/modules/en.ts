@@ -111,7 +111,7 @@ const lang = {
       },
     },
     system: {
-      title: 'QLBH',
+      title: 'Language Link',
       subTitle: 'few lines to write beautiful admin',
       welcome: 'welcome login',
       login: 'Login',

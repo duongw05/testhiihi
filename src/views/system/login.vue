@@ -1,222 +1,138 @@
 <template>
-  <div class="limiter" v-loading="loading"
-       :element-loading-spinner="svg"
-       element-loading-custom-class="loading-custom"
-       element-loading-svg-view-box="0 0 200 200"
-       v-if="!loginByVSA">
-    <div class="container-login100">
-      <div class="wrap-login100">
-        <el-form :model="form" class="fm-v clearfix validate-form" label-position="top" :loading="loading" ref="formRef"
-                 :rules="formRule">
-          <a class="float-l w-full text-center">
-            <img src="../../assets/login/logoVSA.png" class="w-half" alt="">
-          </a>
-          <el-row style="width: 100%">
-            <el-col>
-              <el-form-item :label="'Tên đăng nhập'" size="large"
-                            style="margin-bottom: 20px; width: 100%; font-weight: bold;"
-                            prop="name"
-              >
-                <el-input
-                    size="large"
-                    v-model="form.name"
-                    :placeholder="$t('message.system.userName')"
-                    type="text"
-                    autofocus
-                    maxlength="50"
-                >
-                  <template #prepend>
-                    <i class="sfont system-xingmingyonghumingnicheng"></i>
-                  </template>
-                </el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row style="width: 100%">
-            <el-col>
-              <el-form-item :label="$t('message.system.password')" size="large"
-                            prop="password"
-                            style="width: 100%; margin-bottom: 20px; font-weight: bold">
-                <el-input
-                    size="large"
-                    ref="password"
-                    v-model="form.password"
-                    :type="passwordType"
-                    :placeholder="$t('message.system.password')"
-                    name="password"
-                    maxlength="50"
-                    style="width: 100%;"
-                    @keydown.enter="login">
-                  <template #prepend>
-                    <i class="sfont system-mima"></i>
-                  </template>
-                  <template #append>
-                    <i class="sfont password-icon" :class="passwordType ? 'system-yanjing-guan': 'system-yanjing'"
-                       @click="passwordTypeChange"></i>
-                  </template>
-                </el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
-        <el-button class="login100-form-btn" style="width: 100%; margin-top: 20px"
-                   color="#EE0033"
-                   @click="login"
-                   :loading="loading"
-                   type="primary"
-                   size="large">{{ $t('message.system.login') }}
-        </el-button>
-        <div class="container-change-pass">
-          <span @click="accountImpact(1)"> {{ $t('message.system.changePassword') }} </span>
-          <span @click="accountImpact(2)"> {{ $t('message.system.forgotPassword') }} </span>
-        </div>
+  <div class="login-container">
+    <div class="language-switch">
+      <select-lang/>
+    </div>
+    <div class="login-image">
+    </div>
+    <div class="login-form">
+      <div class="company-info">
+        <img class="company-logo" width="10%" :src="loginLeftPng" alt="Login Image">
+      </div>
+      <div class="welcome-message">
+      </div>
+      <el-form :model="form" @submit.native.prevent="submit" label-position="left" label-width="100px">
+        <el-form-item :label="$t('message.system.userName') + ':'">
+          <el-input
+              size="large"
+              v-model="form.name"
+              :placeholder="$t('message.system.userName')"
+              type="text"
+              maxlength="50"
+          >
+            <template #prepend>
+              <i class="sfont system-xingmingyonghumingnicheng"></i>
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item :label="$t('message.system.password') + ':'">
+          <el-input
+              size="large"
+              ref="password"
+              v-model="form.password"
+              :type="passwordType"
+              :placeholder="$t('message.system.password')"
+              name="password"
+              maxlength="50"
+          >
+            <template #prepend>
+              <i class="sfont system-mima"></i>
+            </template>
+            <template #append>
+              <i class="sfont password-icon" :class="passwordType ? 'system-yanjing-guan': 'system-yanjing'"
+                 @click="passwordTypeChange"></i>
+            </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button style="font-family: sans-serif;font-size: 18px;font-weight: bold; margin-top: 10px;"
+                     :loading="form.loading"
+                     type="primary" color="var(--system-primary-color)" native-type="submit" size="large">{{ $t('message.system.login') }}
+          </el-button>
+        </el-form-item>
+      </el-form>
+      <div class="company-address">
       </div>
     </div>
   </div>
-  <el-row class="login-page" v-loading="loading"
-          :element-loading-spinner="svg"
-          element-loading-custom-class="loading-custom"
-          element-loading-svg-view-box="0 0 200 200"
-          v-if="loginByVSA" style="width: 100%">
-    <el-col :span="24">
-      <div class="left-container">
-        <div class="top-container">
-        </div>
-        <div class="bottom-container">
-          <div class="middle-container">
-            <img src="../../assets/login/logo_background.png" alt="">
-          </div>
-        </div>
-      </div>
-    </el-col>
-  </el-row>
 </template>
 
 <script lang="ts">
 import {systemSubTitle, systemTitle} from '@/config'
-import {defineComponent, onMounted, reactive, ref} from 'vue'
+import {defineComponent, reactive, ref} from 'vue'
 import {useStore} from 'vuex'
 import {useRoute, useRouter} from 'vue-router'
-import {ElMessage, ElNotification} from 'element-plus'
+import {ElMessage} from 'element-plus'
 import selectLang from '@/layout/components/functionList/word.vue'
-import loginLeftPng from '@/assets/login/img.png';
+import loginLeftPng from '@/assets/login/logo.png';
 import {useI18n} from 'vue-i18n'
+import { getAuthRoutes } from '@/router/permission'
 
 export default defineComponent({
   components: {
     selectLang
   },
   setup() {
-    const formRule = reactive({
-      name: [
-        {
-          required: true,
-          message: 'Tên đăng nhập không được để trống',
-          trigger: 'blur',
-        },
-      ],
-      password: [
-        {
-          required: true,
-          message: 'Mật khẩu không được để trống',
-          trigger: 'blur',
-        },
-      ],
-    });
-    const loading = ref(false)
     const store = useStore()
     const router = useRouter()
+    const route = useRoute()
     let {locale, t} = useI18n()
-    const loginByVSA: boolean = import.meta.env.VITE_LOGIN_IN_BY === 'VSA';
-    const svg = '<radialGradient id="a7" cx=".66" fx=".66" cy=".3125" fy=".3125" gradientTransform="scale(1.5)"><stop offset="0" stop-color="#EE0033"></stop><stop offset=".3" stop-color="#EE0033" stop-opacity=".9"></stop><stop offset=".6" stop-color="#EE0033" stop-opacity=".6"></stop><stop offset=".8" stop-color="#EE0033" stop-opacity=".3"></stop><stop offset="1" stop-color="#EE0033" stop-opacity="0"></stop></radialGradient><circle transform-origin="center" fill="none" stroke="url(#a7)" stroke-width="15" stroke-linecap="round" stroke-dasharray="200 1000" stroke-dashoffset="0" cx="100" cy="100" r="70"><animateTransform type="rotate" attributeName="transform" calcMode="spline" dur="2.5" values="360;0" keyTimes="0;1" keySplines="0 0 1 1" repeatCount="indefinite"></animateTransform></circle><circle transform-origin="center" fill="none" opacity=".2" stroke="#EE0033" stroke-width="15" stroke-linecap="round" cx="100" cy="100" r="70"></circle>'
     const form = reactive({
-      name: '',
-      password: '',
+      name: 'admin',
+      password: '123456',
+      loading: false
     })
-    const formRef = ref(null);
     const passwordType = ref('password')
     const passwordTypeChange = () => {
       passwordType.value === '' ? passwordType.value = 'password' : passwordType.value = ''
     }
-    const login = async () => {
-      await formRef.value.validate(async (valid: boolean) => {
-        if (valid) {
-          let params = {
-            username: form.name,
-            password: form.password
-          }
-          loginAPI(params);
+    const checkForm = () => {
+      return new Promise((resolve, reject) => {
+        if (form.name === '') {
+          ElMessage.warning({
+            message: t('message.system.userNameValidate'),
+            type: 'warning'
+          });
+          return;
         }
+        if (form.password === '') {
+          ElMessage.warning({
+            message: t('message.system.passwordValidate'),
+            type: 'warning'
+          })
+          return;
+        }
+        resolve(true)
       })
     }
-    const loginVsa = () => {
-      let value = router.currentRoute.value.query?.ticket;
-      if (value) {
-        handleLoginVSA(value)
-      } else {
-        const passportUrl: string = import.meta.env.VITE_APP_PASSPORT_URL || '';
-        const domainCode: string = import.meta.env.VITE_APP_DOMAIN_CODE || '';
-        const loginUrl: string = import.meta.env.VITE_APP_LOGIN_URL || '';
-        window.location.href = passportUrl + '?appCode=' + domainCode + '&service=' + loginUrl
-      }
+    const submit = () => {
+      checkForm()
+          .then(() => {
+            form.loading = true
+            let params = {
+              username: form.name,
+              password: form.password
+            }
+            store.dispatch('user/login', params)
+                .then(async () => {
+                  // await store.dispatch('globalParam/getData', params)
+                  ElMessage.success({
+                    message: t('message.common.login'),
+                    type: 'success',
+                    showClose: true,
+                    duration: 1000
+                  })
+                  // console.log("store", localStorage.getItem('vuex'))
+                  setTimeout(async () => {
+                    await getAuthRoutes()
+                    await router.push("/dashboard")
+                  }, 200)
+                  // await router.push(route.query.redirect as RouteLocationRaw || '/')
+                }).finally(() => {
+              form.loading = false
+            })
+          })
     }
-
-    function loginAPI(params: any) {
-      try {
-        loading.value = true;
-        store.dispatch('user/login', params)
-            .then(async () => {
-              await store.dispatch('globalParam/getData', params)
-              ElNotification({
-                title: 'Thành công',
-                message: t('message.common.login'),
-                type: 'success',
-                duration: 3 * 1000
-              })
-              await router.push("/dashboard")
-            }).finally(() => {
-          loading.value = false;
-        })
-      } catch (e) {
-        console.log(e)
-      }
-    }
-
-    const handleLoginVSA = async (ticket: any) => {
-      const loginUrl: string = import.meta.env.VITE_APP_LOGIN_URL || '';
-      let params = {
-        ticket: ticket,
-        type: 'VSA',
-        loginUrl: loginUrl
-      }
-      loginAPI(params);
-    }
-    const checkVsa = () => {
-      let value = router.currentRoute.value.query?.ticket;
-      if (value) {
-        handleLoginVSA(value)
-      }
-    }
-    const accountImpact = (type: number) => {
-      switch (type) {
-        case 1:
-          router.push("/changePassword")
-          break;
-        case 2:
-          const passportUrl: string = import.meta.env.VITE_RESET_PASS || '';
-          window.location.href = passportUrl;
-          break;
-        default:
-          return;
-      }
-    }
-    onMounted(() => {
-      if (loginByVSA) {
-        loginVsa()
-      } else {
-        checkVsa()
-      }
-    })
     return {
       loginLeftPng,
       systemTitle,
@@ -224,174 +140,295 @@ export default defineComponent({
       form,
       passwordType,
       passwordTypeChange,
-      login,
-      loginVsa,
-      loading,
-      loginByVSA,
-      svg,
-      accountImpact,
-      formRule,
-      formRef
+      submit
     }
   }
 })
 </script>
 
 <style lang="scss" scoped>
-* {
-  margin: 0;
-  padding: 0;
-  float: left;
-}
-
-.limiter {
-  width: 100%;
-  margin: 0 auto;
-  float: left;
-}
-
-.container-login100 {
-  width: 100%;
-  min-height: 100vh;
+/* Container styles */
+.login-container {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  padding: 15px;
-  background-repeat: no-repeat;
-  background-position: center;
+  width: 100vw;
+  height: 100vh;
+  //background: #fff url('@/assets/login/bg.png') no-repeat center center;
   background-size: cover;
-  float: left;
-  padding-bottom: 60px;
-  padding-top: 76px;
   position: relative;
-  background-image: url("../../assets/login/background_light_2023.jpg");
-  box-sizing: border-box;
 }
 
-.wrap-login100 {
-  width: 410px;
-  background: #fff;
-  border-radius: 16px;
-  overflow: hidden;
-  float: left;
-  position: relative;
-
-  padding: 20px;
+/* Language switch styles */
+.language-switch {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 24px;
+  color: #fff;
+  cursor: pointer;
 }
 
-.w-half {
-  width: 185px;
-  height: 70px;
-  margin: 20px auto;
+.language-switch i:hover {
+  color: #2196F3;
 }
 
-.w-full {
-  width: 100%;
-}
-
-.text-center {
+/* Image section styles */
+.login-image {
+  flex: 1;
   display: flex;
+  justify-content: center;
+  flex-direction: column; /* Ensure items are stacked vertically */
+  align-items: center;
+  background: rgb(255, 255, 255) url('@/assets/login/logo_full.png') no-repeat center center;
+  background-size: 40%;
+  padding: 20px;
+  margin-top: -10%;
+}
+
+/* Company name styles in login-image */
+.company-name {
+  font-size: 47px;
+  font-weight: bold;
+  color: rgb(225, 14, 14); /* Blue color for company name */
   text-align: center;
+  margin-top: 50%; /* Ensure no additional margin */
 }
 
-.float-l {
-  float: left;
+.company-name-2 {
+  font-size: 47px;
+  font-weight: bold;
+  color: rgb(225, 14, 14); /* Blue color for company name */
+  text-align: center;
+  margin-top: 0;
 }
 
-.login100-form-btn {
-  font-size: 16px;
-  line-height: 1.1;
-  text-transform: uppercase;
-  padding: 0 20px;
-  width: 100%;
-  height: 50px;
+.company-name-1 {
+  color: rgb(225, 14, 14); /* Blue color for company name */
+  text-align: center;
+  margin: 10px 0 0 0; /* Ensure no additional margin */
 }
 
-.login-page {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-}
-
-.user-layout-login {
-  width: 370px;
-
-  label {
-    font-size: 14px;
-  }
-
-  .getCaptcha {
-    display: block;
-    width: 100%;
-
-  }
-
-  .forge-password {
-    font-size: 14px;
-  }
-
-  button.login-button {
-    padding: 0 15px;
-    font-size: 14px;
-    width: 100%;
-  }
-
-  .user-login-other {
-    text-align: left;
-    margin-top: 24px;
-    line-height: 22px;
-
-    .item-icon {
-      font-size: 24px;
-      color: rgba(0, 0, 0, 0.2);
-      margin-left: 16px;
-      vertical-align: middle;
-      cursor: pointer;
-      transition: color 0.3s;
-
-      &:hover {
-        color: #1890ff;
-      }
-    }
-
-    .register {
-      float: right;
-    }
-  }
-}
-
-.left-container {
+/* Form section styles */
+.login-form {
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  min-height: 100vh;
-  background: #FFFFFF;
+  background-color: rgb(255, 255, 255); /* White transparent background to ensure text readability */
+  padding: 40px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Adding shadow to form */
+  border-radius: 10px; /* Rounded corners for form */
+  margin-top: -10%;
+}
 
-  .l-c-title {
-    font-style: normal;
-    font-weight: bold;
-    font-size: 32px;
-    line-height: 40px;
-    /* identical to box height */
+/* Company info styles inside login-form */
+.company-info {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.company-logo {
+  width: 240px; /* Adjust the size as needed */
+}
+
+/* Welcome message styles */
+.welcome-message {
+  text-align: center;
+  margin-bottom: 30px;
+  //color: #2196F3; /* Blue color for welcome message */
+  font-size: 32px; /* Increased font size for welcome message */
+}
+
+/* Form element styles */
+.el-form {
+  width: 100%;
+  max-width: 500px; /* Increased max-width for form */
+}
+
+.el-form-item {
+  font-size: 20px; /* Increased font size for form labels */
+  margin-bottom: 20px; /* Increased margin between form items */
+}
+
+.el-form-item label {
+  font-size: 20px !important; /* Ensures the font size for labels */
+}
+
+.el-input__inner {
+  border-radius: 10px; /* More rounded corners for inputs */
+  font-size: 20px; /* Increased font size for input text */
+  padding: 15px; /* Increased padding for input fields */
+}
+
+.el-button {
+  width: 100%;
+  font-size: 20px; /* Increased font size for button text */
+  padding: 15px; /* Increased padding for button */
+  border-radius: 10px; /* Rounded corners for button */
+}
+
+/* Company address styles */
+.company-address {
+  position: absolute;
+  left: 50%; /* Move to the horizontal center */
+  bottom: 20px; /* Distance from the bottom */
+  transform: translateX(-50%); /* Center horizontally */
+  text-align: center;
+  font-size: 18px; /* Font size for company address */
+  color: #000000; /* Text color for company address */
+  font-weight: bold;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 1024px) {
+  .login-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .el-button {
+    width: 100%;
+    font-size: 20px; /* Increased font size for button text */
+    padding: 15px; /* Increased padding for button */
+    border-radius: 10px; /* Rounded corners for button */
+  }
+
+  .login-image {
+    /* Image section styles remain the same */
+    display: none;
+  }
+
+  .company-logo {
+    position: relative; /* Di chuyển vị trí của company-logo */
+    top: -40px; /* Đẩy lên trên phần login-image */
+  }
+
+  .company-name {
+    font-size: 24px; /* Decreased font size for smaller screens */
+  }
+
+  .login-form {
+    padding: 20px; /* Added padding for smaller screens */
+  }
+
+  .welcome-message {
+    font-size: 28px; /* Decreased font size for smaller screens */
+  }
+
+  .el-form {
+    max-width: 400px; /* Decreased max-width for smaller screens */
+  }
+
+  .company-logo {
+    max-width: 180px; /* Adjust the size as needed */
+  }
+
+  .el-form-item,
+  .el-form-item label,
+  .el-input__inner,
+  .el-button {
+    font-size: 18px; /* Decreased font size for form elements on smaller screens */
+  }
+  .company-name {
+    font-size: 18px; /* Decreased font size for smaller screens */
+  }
+  .company-name-1 {
+    font-size: 18px; /* Decreased font size for smaller screens */
+  }
+  .company-address {
+    width: 70%;
+    font-size: 12px; /* Decreased font size for smaller screens */
+    //bottom: 50px; /* Adjust bottom position for smaller screens */
+  }
+}
+
+
+@media screen and (min-width: 1025px) and (max-width : 1920px) {
+
+  .company-name {
+    font-size: 34px;
     text-align: center;
-    color: #c52f40;
+    margin-top: 55% ; /* Ensure no additional margin */
+  }
+
+  .company-name-1 {
+    text-align: center;
+    margin: 30px 0 0 0; /* Ensure no additional margin */
+  }
+
+  .company-name-2 {
+    font-size: 34px;
+  }
+
+  .company-address {
+    margin-bottom: 40px;
   }
 }
 
-.container-change-pass {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-top: 10px;
-  font-weight: 600;
-  font-size: 13px;
-  line-height: 40px;
-  cursor: pointer;
-  color: var(--el-text-color-regular);
 
-  span:hover {
-    color: #EE0033;
+@media screen and (max-height: 470px) {
+  .login-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background: #fff url('@/assets/login/bg.png') no-repeat center;
+  }
+
+  .el-button {
+    width: 100%;
+    //background-color: #2196F3; /* Blue button */
+    //border-color: #2196F3;
+    font-size: 20px; /* Increased font size for button text */
+    padding: 15px; /* Increased padding for button */
+    border-radius: 10px; /* Rounded corners for button */
+  }
+
+  .login-image {
+    /* Image section styles remain the same */
+    display: none;
+  }
+
+  .company-logo {
+    position: relative; /* Di chuyển vị trí của company-logo */
+    top: 10px; /* Đẩy lên trên phần login-image */
+  }
+
+  .company-name {
+    font-size: 24px; /* Decreased font size for smaller screens */
+  }
+
+  .login-form {
+    padding: 20px; /* Added padding for smaller screens */
+  }
+
+  .welcome-message {
+    font-size: 28px; /* Decreased font size for smaller screens */
+  }
+
+  .el-form {
+    max-width: 400px; /* Decreased max-width for smaller screens */
+  }
+
+  .company-logo {
+    max-width: 100px; /* Adjust the size as needed */
+  }
+
+  .el-form-item,
+  .el-form-item label,
+  .el-input__inner,
+  .el-button {
+    font-size: 18px; /* Decreased font size for form elements on smaller screens */
+  }
+  .company-name {
+    font-size: 18px; /* Decreased font size for smaller screens */
+  }
+  .company-name-1 {
+    font-size: 18px; /* Decreased font size for smaller screens */
+  }
+  .company-address {
+    display: none;
   }
 }
+
 </style>

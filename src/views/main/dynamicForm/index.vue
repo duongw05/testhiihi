@@ -133,7 +133,6 @@ export default defineComponent({
       console.log("value", value);
     }
 
-    /** 关闭当前选项卡 */
     return {
       config,
       fetchData,

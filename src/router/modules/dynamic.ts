@@ -13,7 +13,6 @@ const route: Route[] = [
     component: Layout,
     redirect: '/dynamic/index',
     meta: { title: 'Form dynamic', icon: 'sfont system-24gl-printer' },
-    hideMenu: !hasPermissionMenu([...SETTINGS]),
     children: [
       {
         path: 'index',

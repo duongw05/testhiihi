@@ -11,9 +11,9 @@ import systemSetup from "@/router/modules/systemSetup";
 
 const FrontRoutes: Route[] = [
     ...Dashboard,
-    ...Customer,
-    ...SalePolicy,
-    ...systemSetup,
+    // ...Customer,
+    // ...SalePolicy,
+    // ...systemSetup,
     // ...Component,
     // ...Pages,
     // ...Chart,
