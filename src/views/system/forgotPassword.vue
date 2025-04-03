@@ -63,7 +63,7 @@ import {ElMessage, ElNotification} from 'element-plus'
 import selectLang from '@/layout/components/functionList/word.vue'
 import loginLeftPng from '@/assets/login/img.png';
 import {useI18n} from 'vue-i18n'
-import {changePassword, forgotPassword} from "@/api/user";
+// import {changePassword, forgotPassword} from "@/api/user";
 
 export default defineComponent({
   components: {

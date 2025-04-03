@@ -1,6 +1,7 @@
 import type {Route} from '../index.type'
 
 import Dashboard from '../modules/dashboard'
+import PermissionManage from '../modules/permissionManage'
 import Component from '../modules/component'
 import store from "@/store";
 import {getPermissionCommon} from "@/router";
@@ -11,7 +12,8 @@ import systemSetup from "@/router/modules/systemSetup";
 
 const FrontRoutes: Route[] = [
     ...Dashboard,
-    // ...Customer,
+    ...PermissionManage,
+    ...Customer,
     // ...SalePolicy,
     // ...systemSetup,
     // ...Component,
@@ -39,9 +41,5 @@ export function hasPermission(role: String) {
 }
 
 export function isSupperAdmin() {
-    let user = store.state.user.info?.userName
-    let globalAdmin = store.state.globalParam.globalValue?.filter((item: {
-        code: any
-    }) => item.attCode === ADMIN && item.modelCode === ADMIN && item?.valueCode.toLowerCase() === user?.toLowerCase())
-    return globalAdmin && globalAdmin.length > 0;
+    return true
 }
