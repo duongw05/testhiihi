@@ -234,7 +234,7 @@ public class MenuManagementServiceImpl implements MenuManagementService {
             Menu entity = mapper.toEntity(request);
             String userName = authenticationUtils.currentUserName();
             entity.setCreatedBy(userName);
-            entity.setCreatedDate(LocalDateTime.now());
+            entity.setCreatedDate(new Date());
             entity.setDeleted(Constants.DELETE.INACTIVE);
             repo.save(entity);
             response.setMessage("Thêm mới menu thành công!");
@@ -301,7 +301,7 @@ public class MenuManagementServiceImpl implements MenuManagementService {
             if (DataUtils.isNullOrEmpty(userName))
                 throw new BusinessException(ConstantsErrorCode.MENU_MANAGEMENT_ERRORS.USERNAME_NOT_FOUND);
             entity.setDeletedBy(userName);
-            entity.setDeletedDate(LocalDateTime.now());
+            entity.setDeletedDate(new Date());
             entity.setDeleted(Constants.DELETE.ACTIVE);
             repo.save(entity);
             response.setMessage("Xóa menu thành công!");

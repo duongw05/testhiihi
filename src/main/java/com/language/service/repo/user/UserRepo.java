@@ -25,8 +25,8 @@ public interface UserRepo extends JpaRepository<User, Long>, UserRepoCustom {
     Optional<User> findByPhone(String phone);
 
     @Query("select distinct s from User s" +
-            " left join UserGroupMap ugm on ugm.user.id = s.id" +
-            " left join Group g on g.id = ugm.group.id" +
+            " left join UserGroupMap ugm on ugm.userId = s.id" +
+            " left join Group g on g.id = ugm.groupId" +
             " where (s.username like :username escape '\\' or :username is null) " +
             " and (s.fullName like :fullName escape '\\' or :fullName is null)" +
             " and (s.enabled = :enabled or :enabled is null)" +

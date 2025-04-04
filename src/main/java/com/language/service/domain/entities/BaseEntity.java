@@ -1,10 +1,7 @@
 package com.language.service.domain.entities;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,12 +29,14 @@ public class BaseEntity implements Serializable {
     @CreatedDate
     @Column(name = "created_date")
     @ColumnDisplayInfo(displayName = ConstantAuditCode.CREATED_DATE)
-    private LocalDateTime createdDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDate;
 
     @LastModifiedDate
     @Column(name = "last_modified_date")
     @ColumnDisplayInfo(displayName = ConstantAuditCode.LAST_MODIFIED_DATE)
-    private LocalDateTime lastModifiedDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastModifiedDate;
 
     @CreatedBy
     @Column(name = "created_by")
@@ -59,7 +58,8 @@ public class BaseEntity implements Serializable {
 
     @Column(name = "deleted_date")
     @ColumnDisplayInfo(displayName = ConstantAuditCode.DELETED_DATE)
-    private LocalDateTime deletedDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date deletedDate;
 
     @Transient
     @AuditDelete

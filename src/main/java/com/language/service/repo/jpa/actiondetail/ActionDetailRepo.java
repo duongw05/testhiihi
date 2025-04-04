@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface ActionDetailRepo extends JpaRepository<ActionDetail, Long>, ActionDetailCustomRepo {
 
-    @Query("from ActionDetail a where a.actionAudit.id in :ids")
+    @Query("from ActionDetail a where a.actionAuditId in :ids")
     List<ActionDetail> findAllByActionAudit(List<Long> ids);
 }

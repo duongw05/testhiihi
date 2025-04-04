@@ -15,8 +15,7 @@ import java.util.*;
 @Table(name= "ACTION_DETAIL")
 public class ActionDetail extends BaseEntity {
    @Id
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ACTION_DETAIL_SEQ")
-   @SequenceGenerator(name = "ACTION_DETAIL_SEQ", sequenceName = "ACTION_DETAIL_SEQ", allocationSize = 1)
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
    @Column(name = "ID", nullable = false)
    private Long id;
 
@@ -42,6 +41,7 @@ public class ActionDetail extends BaseEntity {
    private String newDisplayValue;
 
    @Column(name="ISSUE_DATE")
+   @Temporal(TemporalType.TIMESTAMP)
    private Date issueDate;
 
    @Column(name="STAFF_ID")
@@ -56,9 +56,8 @@ public class ActionDetail extends BaseEntity {
    @Column(name="PARENT_COLUMN_OLD_VALUE")
    private String parentColumnOldValue;
 
-   @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-   @JoinColumn(name = "ACTION_AUDIT_ID", referencedColumnName = "id")
-   private ActionAudit actionAudit;
+   @Column(name = "ACTION_AUDIT_ID")
+   private Long actionAuditId;
 
    @Column(name="PRACTICE_COLUMN_NEW_VALUE")
    private String practiceColumnNewValue;

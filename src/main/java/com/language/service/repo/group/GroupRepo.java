@@ -40,9 +40,8 @@ public interface GroupRepo extends JpaRepository<Group, Long>, GroupRepoCustom {
 
     @Query("""
     FROM Group g
-    JOIN g.userGroupMaps ugm
-    JOIN ugm.user u
-    WHERE u.id = :id
+    JOIN UserGroupMap ugm on g.id = ugm.groupId
+    WHERE ugm.userId = :id
     AND ugm.deleted = :deleted
 """)
     List<Group> findGroupByUserId(@Param("id") Long id, @Param("deleted") int deleted);

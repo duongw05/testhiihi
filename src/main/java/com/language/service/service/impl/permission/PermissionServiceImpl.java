@@ -32,6 +32,7 @@ import com.language.service.rest.dto.response.GroupPermissionResponseDTO;
 import com.language.service.service.abs.permission.PermissionService;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -88,8 +89,8 @@ public class PermissionServiceImpl implements PermissionService {
                 Permission permission = permissionRepo.findById(id).orElseThrow(() -> new BusinessException(ConstantsErrorCode.PERMISSION.ERROR_PERMISSION_NOT_FOUND));
                 Group group = groupRepo.findById(groupId).orElseThrow(() -> new BusinessException(ConstantsErrorCode.GROUP.ERROR_GROUP_NOT_FOUND));
                 groupPermissionMap = new GroupPermissionMap();
-                groupPermissionMap.setPermission(permission);
-                groupPermissionMap.setGroup(group);
+                groupPermissionMap.setPermissionId(permission.getId());
+                groupPermissionMap.setGroupId(group.getId());
             }
             groupPermissionMap.setDeleted(Constants.DELETE.INACTIVE);
             groupPermissionMapRepo.save(groupPermissionMap);
@@ -111,7 +112,7 @@ public class PermissionServiceImpl implements PermissionService {
                     -> new BusinessException(ConstantsErrorCode.GROUP_PERMISSION.ERROR_PERMISSION_GROUP_NOT_FOUND));
             groupPermissionMap.setDeleted(Constants.DELETE.ACTIVE);
             groupPermissionMap.setDeletedBy(authenticationUtils.currentUserName());
-            groupPermissionMap.setDeletedDate(LocalDateTime.now());
+            groupPermissionMap.setDeletedDate(new Date());
             return new BaseResponseDTO();
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
@@ -164,7 +165,7 @@ public class PermissionServiceImpl implements PermissionService {
             Permission entity = permissionRepo.findById(id).orElseThrow(() -> new BusinessException(ConstantsErrorCode.PERMISSION.ERROR_PERMISSION_EXIST));
             entity.setDeleted(Constants.DELETE.ACTIVE);
             entity.setDeletedBy(authenticationUtils.currentUserName());
-            entity.setDeletedDate(LocalDateTime.now());
+            entity.setDeletedDate(new Date());
             return new BaseResponseDTO();
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);

@@ -15,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import com.language.service.service.abs.loginsession.LoginSessionService;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 
 @Component
@@ -41,7 +42,7 @@ public class LoginSessionServiceImpl extends AbstractService<LoginSession, Long>
         UserMapper userMapper = Mappers.getMapper(UserMapper.class);
         User user = userMapper.fromId(userId);
         loginSession.setUser(user);
-        loginSession.setCreatedDate(LocalDateTime.now());
+        loginSession.setCreatedDate(new Date());
         loginSessionRepo.save(loginSession);
     }
 }

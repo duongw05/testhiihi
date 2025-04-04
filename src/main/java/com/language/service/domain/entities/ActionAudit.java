@@ -15,8 +15,7 @@ import java.util.*;
 @Table(name= "ACTION_AUDIT")
 public class ActionAudit extends BaseEntity {
    @Id
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ACTION_AUDIT_SEQ")
-   @SequenceGenerator(name = "ACTION_AUDIT_SEQ", sequenceName = "ACTION_AUDIT_SEQ", allocationSize = 1)
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
    @Column(name = "ID", nullable = false)
    private Long id;
 
@@ -40,8 +39,5 @@ public class ActionAudit extends BaseEntity {
 
    @Column(name="STATUS")
    private Integer status;
-
-   @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "actionAudit")
-   List<ActionDetail> actionDetails;
 
 }

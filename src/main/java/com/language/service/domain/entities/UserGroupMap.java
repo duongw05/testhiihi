@@ -17,17 +17,14 @@ public class UserGroupMap extends BaseEntity {
 
    @Id
    @Column(name = "id", updatable = false, nullable = false)
-   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_GROUP_MAP_SEQ")
-   @SequenceGenerator(name = "USER_GROUP_MAP_SEQ", sequenceName = "USER_GROUP_MAP_SEQ", allocationSize = 1)
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
    private long id;
 
-   @ManyToOne
-   @JoinColumn(name = "USER_ID")
-   private User user;
+   @Column(name = "USER_ID")
+   private Long userId;
 
-   @ManyToOne
-   @JoinColumn(name = "GROUP_ID")
-   private Group group;
+   @Column(name = "GROUP_ID")
+   private Long groupId;
 
    @Column(name="STATUS")
    private Integer status;

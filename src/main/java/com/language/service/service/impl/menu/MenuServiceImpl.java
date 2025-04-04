@@ -31,6 +31,7 @@ import com.language.service.service.abs.permission.PermissionService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -207,8 +208,8 @@ public class MenuServiceImpl extends AbstractService<Menu, Long> implements Menu
                 Menu menu = menuRepo.findById(id).orElseThrow(() -> new BusinessException(ConstantsErrorCode.MENU.ERROR_MENU_NOT_FOUND));
                 Group group = groupRepo.findById(groupId).orElseThrow(() -> new BusinessException(ConstantsErrorCode.GROUP.ERROR_GROUP_NOT_FOUND));
                 groupMenuMap = new GroupMenuMap();
-                groupMenuMap.setMenu(menu);
-                groupMenuMap.setGroup(group);
+                groupMenuMap.setMenuId(menu.getId());
+                groupMenuMap.setGroupId(group.getId());
             } else {
                 System.out.println("NOT NULL");
             }
@@ -232,7 +233,7 @@ public class MenuServiceImpl extends AbstractService<Menu, Long> implements Menu
                     -> new BusinessException(ConstantsErrorCode.GROUP_PERMISSION.ERROR_PERMISSION_GROUP_NOT_FOUND));
             groupMenuMap.setDeleted(Constants.DELETE.ACTIVE);
             groupMenuMap.setDeletedBy(authenticationUtils.currentUserName());
-            groupMenuMap.setDeletedDate(LocalDateTime.now());
+            groupMenuMap.setDeletedDate(new Date());
             return new BaseResponseDTO();
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);

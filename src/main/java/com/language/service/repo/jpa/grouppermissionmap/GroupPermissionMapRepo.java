@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface GroupPermissionMapRepo extends JpaRepository<GroupPermissionMap, Long>, GroupPermissionMapCustomRepo {
 
-    @Query("from GroupPermissionMap  g where g.group.id = :groupId and g.permission.id = :permissionId and g.deleted = :deleted")
+    @Query("from GroupPermissionMap  g where g.groupId = :groupId and g.permissionId = :permissionId and g.deleted = :deleted")
     Optional<GroupPermissionMap> findByGroupAndPermission(Long groupId, Long permissionId, Integer deleted);
 
-    @Query("from GroupPermissionMap  g where g.group.id = :groupId and g.permission.id = :permissionId")
+    @Query("from GroupPermissionMap  g where g.groupId = :groupId and g.permissionId = :permissionId")
     Optional<GroupPermissionMap> findByGroupAndPermissionWithoutDelete(Long groupId, Long permissionId);
 }

@@ -96,9 +96,9 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
             List<Long> groupIds = cmd.getGroupIds();
             List<Long> groupIdsDB = new ArrayList<>();
             for (UserGroupMap authUserGroupMap : userGroupMaps) {
-                authUserGroupMap.setStatus(groupIds.contains(authUserGroupMap.getGroup().getId()) ? Constants.STATUS.ACTIVE : Constants.STATUS.INACTIVE);
-                authUserGroupMap.setDeleted(groupIds.contains(authUserGroupMap.getGroup().getId()) ? Constants.DELETE.INACTIVE : Constants.DELETE.ACTIVE);
-                groupIdsDB.add(authUserGroupMap.getGroup().getId());
+                authUserGroupMap.setStatus(groupIds.contains(authUserGroupMap.getGroupId()) ? Constants.STATUS.ACTIVE : Constants.STATUS.INACTIVE);
+                authUserGroupMap.setDeleted(groupIds.contains(authUserGroupMap.getGroupId()) ? Constants.DELETE.INACTIVE : Constants.DELETE.ACTIVE);
+                groupIdsDB.add(authUserGroupMap.getGroupId());
             }
             List<Long> groupIdsNotInDB = new ArrayList<>(groupIds);
             groupIdsNotInDB.removeAll(groupIdsDB);
@@ -106,7 +106,7 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
                 List<UserGroupMap> userGroups = getUserGroupMaps(groupIdsNotInDB, user);
                 userGroupMaps.addAll(userGroups);
             }
-            user.setUserGroupMaps(userGroupMaps);
+//            user.setUserGroupMaps(userGroupMaps);
             return new BaseResponseDTO("success", 200);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -129,8 +129,6 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
             String hashedPassword = passwordEncoder.encode(cmd.getPassword());
             authUser.setPassword(hashedPassword);
             authUser.setDeleted(Constants.DELETE.INACTIVE);
-            List<UserGroupMap> userGroups = getUserGroupMaps(cmd.getGroupIds(), authUser);
-            authUser.setUserGroupMaps(userGroups);
             userRepo.save(authUser);
             return Mappers.getMapper(UserMapper.class).toDto(authUser);
         } catch (Exception e) {
@@ -158,8 +156,8 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
         List<UserGroupMap> userGroups = new ArrayList<>();
         for (Group authGroup : groups) {
             UserGroupMap userGroupMap = new UserGroupMap();
-            userGroupMap.setUser(authUser);
-            userGroupMap.setGroup(authGroup);
+            userGroupMap.setUserId(authUser.getId());
+            userGroupMap.setGroupId(authGroup.getId());
             userGroupMap.setStatus(Constants.STATUS.ACTIVE);
             userGroupMap.setDeleted(Constants.DELETE.INACTIVE);
             userGroups.add(userGroupMap);

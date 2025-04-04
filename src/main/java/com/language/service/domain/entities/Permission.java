@@ -1,6 +1,8 @@
 package com.language.service.domain.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import com.language.service.domain.dtos.PermissionCodeDTO;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -9,6 +11,8 @@ import com.language.service.domain.dtos.PermissionDTO;
 
 import java.io.Serializable;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "permission")
 @EntityListeners(AuditingEntityListener.class)
@@ -91,8 +95,7 @@ public class Permission extends BaseEntity implements Serializable {
 
     @Id
     @Column(name = "id", updatable = false, nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PERMISSION_SEQ")
-    @SequenceGenerator(name = "PERMISSION_SEQ", sequenceName = "PERMISSION_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "code")
@@ -105,35 +108,4 @@ public class Permission extends BaseEntity implements Serializable {
     @Column(name = "name")
     private String name;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return this.code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getPermissionGroup() {
-        return permissionGroup;
-    }
-
-    public void setPermissionGroup(String permissionGroup) {
-        this.permissionGroup = permissionGroup;
-    }
 }
