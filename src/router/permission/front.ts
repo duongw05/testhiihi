@@ -41,5 +41,10 @@ export function hasPermission(role: String) {
 }
 
 export function isSupperAdmin() {
-    return true
+    return true;
+    // let user = store.state.user.info?.userName
+    // let globalAdmin = store.state.globalParam.globalValue?.filter((item: {
+    //     code: any
+    // }) => item.attCode === ADMIN && item.modelCode === ADMIN && item?.valueCode.toLowerCase() === user?.toLowerCase())
+    // return globalAdmin && globalAdmin.length > 0;
 }
