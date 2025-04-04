@@ -9,9 +9,9 @@
     <div class="right-box">
       <div class="function-list">
 <!--        <div class="function-list-item hidden-sm-and-down"><Full-screen /></div>-->
-<!--        <div class="function-list-item"><Word /></div>-->
 <!--        <div class="function-list-item"><SizeChange /></div>-->
         <div class="function-list-item hidden-sm-and-down"><Theme /></div>
+        <div class="function-list-item"><Word /></div>
       </div>
       <div class="user-info">
         <el-dropdown>

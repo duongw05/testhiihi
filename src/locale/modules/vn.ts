@@ -1,28 +1,36 @@
 import locale from 'element-plus/dist/locale/vi.mjs'
 import {dashboard} from "@/locale/modules/dashboard/dashboard_vn";
 import {settings} from "@/locale/modules/settings/settings_vn";
+import {permissionManage} from "@/locale/modules/permissionManage/permissionManage_vn";
 
 const lang = {
     el: locale.el, // element-plus i18 setting
     message: {
         language: 'Tiếng Việt',
         common: {
+            advancedSearch: 'Tìm kiếm nâng cao',
             search: 'Tìm kiếm',
-            searchTip: 'please input keyword',
-            add: 'add',
-            update: 'update',
-            del: 'delete',
-            delBat: 'delete choose',
-            delTip: 'Are you sure delete the selection data ?',
-            handle: 'handle',
+            searchTip: 'Vui lòng nhập từ khóa',
+            add: 'Thêm mới',
+            update: 'Cập nhật',
+            del: 'Xóa',
+            delBat: 'Xóa chọn',
+            delTip: 'Bạn có chắc chắn xóa dữ liệu đã chọn không?',
+            handle: 'xử lý',
             importData: 'Nhập dữ liệu chấm công',
             exportExcel:'Xuất dữ liệu chấm công',
             exportExcelTip:'please input file name',
-            login: 'Đăng nhập thành công'
+            login: 'Đăng nhập thành công',
+            placeholderAll: 'Tất cả',
+            reEnter: 'Nhập lại',
+            export: 'Xuất báo cáo',
+            searchResult: 'Kết quả tìm kiếm',
+            chooseValue: 'Chọn giá trị'
         },
         menu: {
             ...dashboard,
             ...settings,
+            ...permissionManage,
             system: {
                 name: 'Hệ thống',
                 redirect: 'redirect',

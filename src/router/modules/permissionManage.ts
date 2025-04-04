@@ -1,13 +1,14 @@
 import type {Route} from '../index.type'
 import Layout from '@/layout/index.vue'
-import { createNameComponent } from '../createNode'
+import {createNameComponent} from '../createNode'
 
+// @ts-ignore
 const route: Route[] = [
     {
-        path: '/function-management',
+        path: '/permission-management',
         component: Layout,
-        redirect: '/function-management',
-        meta: {title: 'Quản lý phân quyền', icon: 'iconfont icon-shoplight'},
+        redirect: '/permission-management',
+        meta: {title: 'message.menu.permissionManage', icon: 'iconfont icon-shoplight'},
         children: [
             {
                 path: 'function-management',
@@ -17,7 +18,7 @@ const route: Route[] = [
                 activeRouter: true,
                 meta: {
                     activeBreadcrumb: true,
-                    title: 'Quản lý chức năng', hideClose: false
+                    title: 'message.menu.functionManage.self', hideClose: false
                 }
             },
             {
@@ -28,8 +29,21 @@ const route: Route[] = [
                 activeRouter: true,
                 meta: {
                     activeBreadcrumb: true,
-                    title: 'Quản lý người dùng', hideClose: false
-                }
+                    title: 'message.menu.userManage.self', hideClose: false
+                },
+                children: [
+                    {
+                        path: 'user-detail/:data',
+                        name: 'user-detail',
+                        component: createNameComponent(() => import('@/views/main/permissionManagement/userManage/DetailForm.vue')),
+                        meta: {
+                            title: 'Thông tin người dùng',
+                            hideClose: true,
+                        },
+                        // @ts-ignore
+                        hideMenu: true
+                    },
+                ]
             },
             {
                 path: 'group-management',
@@ -39,7 +53,7 @@ const route: Route[] = [
                 activeRouter: true,
                 meta: {
                     activeBreadcrumb: true,
-                    title: 'Quản lý nhóm', hideClose: false
+                    title: 'message.menu.groupManage.self', hideClose: false
                 }
             }
         ]

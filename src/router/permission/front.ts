@@ -1,7 +1,7 @@
 import type {Route} from '../index.type'
 
 import Dashboard from '../modules/dashboard'
-import PermissionManage from '../modules/permissionManage'
+import PermissionManage from "@/router/modules/permissionManage"
 import Component from '../modules/component'
 import store from "@/store";
 import {getPermissionCommon} from "@/router";
