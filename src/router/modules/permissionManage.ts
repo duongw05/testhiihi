@@ -13,7 +13,7 @@ const route: Route[] = [
             {
                 path: 'function-management',
                 name: 'function-management',
-                component: createNameComponent(() => import('@/views/main/permissionManagement/functionManage/index.vue')),
+                component: createNameComponent(() => import('@/views/main/permissionManagement/functionManage/function.vue')),
                 // @ts-ignore
                 activeRouter: true,
                 meta: {
@@ -24,7 +24,7 @@ const route: Route[] = [
             {
                 path: 'user-management',
                 name: 'user-management',
-                component: createNameComponent(() => import('@/views/main/permissionManagement/userManage/index.vue')),
+                component: createNameComponent(() => import('@/views/main/permissionManagement/userManage/user.vue')),
                 // @ts-ignore
                 activeRouter: true,
                 meta: {
@@ -48,7 +48,7 @@ const route: Route[] = [
             {
                 path: 'group-management',
                 name: 'group-management',
-                component: createNameComponent(() => import('@/views/main/permissionManagement/groupManage/index.vue')),
+                component: createNameComponent(() => import('@/views/main/permissionManagement/groupManage/group.vue')),
                 // @ts-ignore
                 activeRouter: true,
                 meta: {
