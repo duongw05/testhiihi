@@ -97,7 +97,7 @@
                  size="default"
                  :icon="CirclePlus"
                  color="var(--system-primary-color)"
-                 @click="onSubmit">
+                 @click="onSubmit(formRef)">
         {{ $t('message.common.add') }}
       </el-button>
     </div>
@@ -111,6 +111,7 @@ import {deepTrim} from "@/utils/mixins/mixin";
 import {useI18n} from "vue-i18n";
 import {CircleCloseFilled, CirclePlus, Close} from "@element-plus/icons";
 import {useRouter} from "vue-router";
+import {createUser} from "@/api/user";
 
 export default defineComponent({
   components: {},
@@ -160,12 +161,22 @@ export default defineComponent({
       {name: t('message.menu.userManage.other'), code: '2'}
     ])
 
-    const onSubmit = () => {
-      loading.value = true
-      setTimeout(() => {
-        loading.value = false
-        visibleValue.value = false
-      }, 400)
+    const onSubmit = async (formEl: FormInstance | undefined) => {
+      if (!formEl) return
+      await formEl.validate(async (valid) => {
+        if (valid) {
+          try {
+            loading.value = true
+            const result = await createUser(formData)
+            console.log(result)
+            loading.value = false
+            visibleValue.value = false
+          } catch (e) {
+            console.log(e)
+            loading.value = false
+          }
+        }
+      })
     }
 
     const closeDialog = (formEl: FormInstance | undefined) => {
