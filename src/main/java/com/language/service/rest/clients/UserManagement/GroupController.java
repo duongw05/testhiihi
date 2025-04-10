@@ -158,26 +158,35 @@ public class GroupController {
     }
 
     @PostMapping(value = "/search-group")
-    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.GROUP_USER_MANAGEMENT).SEARCH_GROUP_USER)")
     public ResponseEntity<?> searchAllGroup(@RequestBody GroupUserSearchParams params, Pageable pageable) throws Exception{
         return responseFactory.success(groupService.searchByFilter(params, pageable));
     }
+    @PostMapping(value = "/quick-search-group")
+    public ResponseEntity<?> quickSearchGroup(@RequestBody GroupUserSearchParams params, Pageable pageable) throws Exception{
+        return responseFactory.success(groupService.quickSearchGroup(params, pageable));
+    }
 
     @PostMapping(value = "/add-group")
-    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.GROUP_USER_MANAGEMENT).ADD_GROUP_USER)")
+//    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.GROUP_USER_MANAGEMENT).ADD_GROUP_USER)")
     public ResponseEntity<?> add(@RequestBody @Valid GroupUserManagementDTO request) throws Exception {
         return responseFactory.success(groupService.saveGroupUser(request));
     }
 
     @PostMapping(value = "/update-group")
-    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.GROUP_USER_MANAGEMENT).UPDATE_GROUP_USER)")
+//    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.GROUP_USER_MANAGEMENT).UPDATE_GROUP_USER)")
     public ResponseEntity<?> update(@RequestBody @Valid GroupUserManagementDTO request)throws Exception {
         return responseFactory.success(groupService.updateGroupUser(request));
     }
 
     @DeleteMapping(value = "/delete-group/{id}")
-    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.GROUP_USER_MANAGEMENT).DELETE_GROUP_USER)")
+//    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.GROUP_USER_MANAGEMENT).DELETE_GROUP_USER)")
     public ResponseEntity<?> delete(@PathVariable("id") Long id)throws Exception {
         return responseFactory.success(groupService.deleteGroupUser(id));
     }
+   @PostMapping("/{groupId}/search-users")
+public ResponseEntity<?> searchUsersInGroup(@PathVariable("groupId") Long groupId, Pageable pageable) {
+    pageable = Utils.getDefaultSortPageable(pageable);
+    Page<UserDTO> usersPage = groupService.findUsersInGroup(groupId, pageable);
+    return responseFactory.success(usersPage);
+}
 }

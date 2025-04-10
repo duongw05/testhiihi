@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class GroupUserSearchParams {
     private String code;
     private String name;
+    private String quickSearch;
 
     public String getCode() {
         return code;
@@ -21,5 +22,13 @@ public class GroupUserSearchParams {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getQuickSearch() {
+        return quickSearch;
+    }
+
+    public void setQuickSearch(String quickSearch) {
+        this.quickSearch = quickSearch;
     }
 }

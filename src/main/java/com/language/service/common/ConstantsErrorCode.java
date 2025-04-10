@@ -14,6 +14,7 @@ public class ConstantsErrorCode {
         public static final String GROUP_USER_NOT_FOUND = "ERROR.GROUP_USER.NOT_FOUND";
         public static final String GROUP_USER_USERNAME_NOT_FOUND = "ERROR.GROUP_USER.USERNAME_NOT_FOUND";
         public static final String GROUP_USER_ID_REQUIRED = "ERROR.GROUP_USER.ID_REQUIRED";
+        public static final String NO_USERS_FOUND_IN_GROUP = "ERROR.GROUP_USER.ID_REQUIRED";
         public static final String GROUP_USER_CODE_EXISTED = "ERROR.GROUP_USER.CODE_EXISTED";
         public static final String GROUP_USER_CODE_NOT_NULL = "ERROR.GROUP_USER.CODE_NOT_NULL";
         public static final String GROUP_USER_CODE_MAX_LENGTH = "ERROR.GROUP_USER.CODE_MAX_LENGTH";

@@ -24,6 +24,9 @@ public interface GroupRepo extends JpaRepository<Group, Long>, GroupRepoCustom {
     @Query(" from Group g where (g.code like :code escape '\\' or :code is null) and (g.name like :name or :name is null) and g.deleted = :deleted")
     Page<Group> searchByFilter(String code, String name, int deleted ,Pageable p);
 
+    @Query(" from Group g where (g.code like :quickSearch escape '\\' or g.name like :quickSearch escape '\\' or :quickSearch is null) and g.deleted = :deleted")
+    Page<Group> quickSearchGroup(String quickSearch, int deleted, Pageable p);
+
     @Query(" from Group g where (g.code = :code or g.name =:name)")
     Optional<Group> getGroupUserByCodeOrName(String code, String name);
 

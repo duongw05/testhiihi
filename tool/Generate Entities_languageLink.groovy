@@ -9,10 +9,10 @@ import com.intellij.database.util.DasUtil
  *   FILES       files helper
  */
 
-rootPath = "D:\\nodo-tangthu\\src\\main\\java\\vn\\nodo\\c09\\tangthu"
+rootPath = "D:\\Nodo_App\\MyLanguageLink\\language-service\\src\\main\\java\\com\\language\\service"
 subPath = ""
 
-packageName = "vn.nodo.c09.tangthu"
+packageName = "com.language.service"
 packageSubName = ""
 typeMapping = [
         (~/(?i)bigint/)                   : "Long",

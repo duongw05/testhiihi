@@ -1,5 +1,8 @@
 package com.language.service.service.impl.group;
 
+import com.language.service.domain.entities.User;
+import com.language.service.domain.mapper.UserMapper;
+import com.language.service.repo.user.UserRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -49,17 +52,22 @@ public class GroupServiceImpl extends AbstractService<Group, Long> implements Gr
     private static final Logger logger = LoggerFactory.getLogger(GroupServiceImpl.class);
 
     private final GroupRepo groupRepo;
+    private final UserRepo userRepo;
     private final MenuRepo menuRepo;
     private final MessageSource messageSource;
     private final AuthenticationUtils auth;
 
+    private final UserMapper userMapper;
+
     @Autowired
-    public GroupServiceImpl(GroupRepo groupRepo, MenuRepo menuRepo, MessageSource messageSource,AuthenticationUtils auth) {
+    public GroupServiceImpl(GroupRepo groupRepo, UserRepo userRepo, MenuRepo menuRepo, MessageSource messageSource, AuthenticationUtils auth, UserMapper userMapper) {
         super(groupRepo);
         this.groupRepo = groupRepo;
+        this.userRepo = userRepo;
         this.menuRepo = menuRepo;
         this.messageSource = messageSource;
         this.auth = auth;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -195,7 +203,21 @@ public class GroupServiceImpl extends AbstractService<Group, Long> implements Gr
     public Page<GroupUserManagementDTO> searchByFilter(GroupUserSearchParams params, Pageable pageable) {
         try {
             Page<Group> rs = groupRepo.searchByFilter(DataUtils.makeLikeQuery(params.getCode()),
-                    DataUtils.makeLikeQuery(params.getName()), Constants.DELETE.INACTIVE ,pageable);
+                    DataUtils.makeLikeQuery(params.getName()), Constants.DELETE.INACTIVE, pageable);
+            List<GroupUserManagementDTO> dtos = Mappers.getMapper(GroupUserManagementMapper.class).toDTO(rs.getContent());
+            List<GroupUserManagementDTO> list = PageUtils.setSerialNumbersList(dtos, pageable, GroupUserManagementDTO::setStt);
+
+            return new PageImpl<>(list, pageable, rs.getTotalElements());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
+    public Page<GroupUserManagementDTO> quickSearchGroup(GroupUserSearchParams params, Pageable pageable) {
+        try {
+            Page<Group> rs = groupRepo.quickSearchGroup(DataUtils.makeLikeQuery(params.getQuickSearch()), Constants.DELETE.INACTIVE, pageable);
             List<GroupUserManagementDTO> dtos = Mappers.getMapper(GroupUserManagementMapper.class).toDTO(rs.getContent());
             List<GroupUserManagementDTO> list = PageUtils.setSerialNumbersList(dtos, pageable, GroupUserManagementDTO::setStt);
 
@@ -211,11 +233,12 @@ public class GroupServiceImpl extends AbstractService<Group, Long> implements Gr
     public BaseResponseDTO saveGroupUser(GroupUserManagementDTO request) {
         BaseResponseDTO response = new BaseResponseDTO();
         try {
-            if (request == null) throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_NOT_FOUND);
-            if (groupRepo.getGroupUserByCodeOrName(request.getCode(),null).isPresent()) {
+            if (request == null)
+                throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_NOT_FOUND);
+            if (groupRepo.getGroupUserByCodeOrName(request.getCode(), null).isPresent()) {
                 throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_CODE_EXISTED);
             }
-            if (groupRepo.getGroupUserByCodeOrName(null,request.getName()).isPresent()) {
+            if (groupRepo.getGroupUserByCodeOrName(null, request.getName()).isPresent()) {
                 throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_NAME_EXISTED);
             }
             Group entity = Mappers.getMapper(GroupUserManagementMapper.class).toEntity(request);
@@ -234,15 +257,16 @@ public class GroupServiceImpl extends AbstractService<Group, Long> implements Gr
     public BaseResponseDTO updateGroupUser(GroupUserManagementDTO request) {
         BaseResponseDTO response = new BaseResponseDTO();
         try {
-            if (request == null) throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_NOT_FOUND);
-            if(DataUtils.isNullOrZero(request.getId())){
+            if (request == null)
+                throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_NOT_FOUND);
+            if (DataUtils.isNullOrZero(request.getId())) {
                 throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_ID_REQUIRED);
             }
             Group entity = groupRepo.findGroupById(request.getId(), Constants.DELETE.INACTIVE).orElseThrow(() -> new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_NOT_FOUND));
-            if (groupRepo.getGroupUserByCodeOrNameAndIdNotEquasl(entity.getId(),request.getCode(),null, Constants.DELETE.INACTIVE)) {
+            if (groupRepo.getGroupUserByCodeOrNameAndIdNotEquasl(entity.getId(), request.getCode(), null, Constants.DELETE.INACTIVE)) {
                 throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_CODE_EXISTED);
             }
-            if (groupRepo.getGroupUserByCodeOrNameAndIdNotEquasl(entity.getId(),null,request.getName(), Constants.DELETE.INACTIVE)) {
+            if (groupRepo.getGroupUserByCodeOrNameAndIdNotEquasl(entity.getId(), null, request.getName(), Constants.DELETE.INACTIVE)) {
                 throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_NAME_EXISTED);
             }
             entity.setCode(request.getCode());
@@ -262,10 +286,12 @@ public class GroupServiceImpl extends AbstractService<Group, Long> implements Gr
     public BaseResponseDTO deleteGroupUser(Long id) {
         BaseResponseDTO response = new BaseResponseDTO();
         try {
-            if (DataUtils.isNullOrZero(id)) throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_ID_REQUIRED);
+            if (DataUtils.isNullOrZero(id))
+                throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_ID_REQUIRED);
             Group entity = groupRepo.findGroupById(id, Constants.DELETE.INACTIVE).orElseThrow(() -> new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_NOT_FOUND));
             String user = auth.currentUserName();
-            if(DataUtils.isNullOrEmpty(user)) throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_USERNAME_NOT_FOUND);
+            if (DataUtils.isNullOrEmpty(user))
+                throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_USERNAME_NOT_FOUND);
             entity.setDeleted(Constants.DELETE.ACTIVE);
             entity.setDeletedBy(user);
             groupRepo.save(entity);
@@ -278,7 +304,21 @@ public class GroupServiceImpl extends AbstractService<Group, Long> implements Gr
     }
 
     @Override
-    public List<Group> findGroupByUserId(Long userId){
+    public List<Group> findGroupByUserId(Long userId) {
         return groupRepo.findGroupByUserId(userId, Constants.DELETE.INACTIVE);
+    }
+
+    @Override
+    public Page<UserDTO> findUsersInGroup(Long groupId, Pageable pageable) {
+        try {
+            if (groupId == null || groupId <= 0) {
+                throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_ID_REQUIRED);
+            }
+            Page<User> search = userRepo.findUsersByGroupId(groupId, Constants.DELETE.INACTIVE, pageable);
+            return new PageImpl<>(Mappers.getMapper(UserMapper.class).toDto(search.getContent()), pageable, search.getTotalElements());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
     }
 }

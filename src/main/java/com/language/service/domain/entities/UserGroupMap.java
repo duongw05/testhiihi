@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.*;
 
 @Setter
@@ -12,21 +13,23 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="user_group_map")
+@Table(name = "user_group_map")
 public class UserGroupMap extends BaseEntity {
 
-   @Id
-   @Column(name = "id", updatable = false, nullable = false)
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private long id;
+    @Id
+    @Column(name = "id", updatable = false, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-   @Column(name = "USER_ID")
-   private Long userId;
+    @Column(name = "USER_ID")
+    private Long userId;
 
-   @Column(name = "GROUP_ID")
-   private Long groupId;
+    @Column(name = "GROUP_ID")
+    private Long groupId;
 
-   @Column(name="STATUS")
-   private Integer status;
+    @Column(name = "STATUS")
+    private Integer status;
 
+    @Column(name = "DELETED")
+    private Integer deleted;
 }

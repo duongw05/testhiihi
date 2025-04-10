@@ -1,6 +1,7 @@
 package com.language.service.service.abs.group;
 
 
+import com.language.service.domain.dtos.UserDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.language.service.domain.dtos.GroupUserManagementDTO;
@@ -43,6 +44,7 @@ public interface GroupService extends BaseService<Group, Long> {
     void unlinkPermission(long groupId, UnlinkPermissionsFromGroup command);
 
     Page<GroupUserManagementDTO> searchByFilter(GroupUserSearchParams params, Pageable pageable);
+    Page<GroupUserManagementDTO> quickSearchGroup(GroupUserSearchParams params, Pageable pageable);
 
     BaseResponseDTO saveGroupUser(GroupUserManagementDTO request);
 
@@ -51,4 +53,5 @@ public interface GroupService extends BaseService<Group, Long> {
     BaseResponseDTO deleteGroupUser(Long id);
 
     List<Group> findGroupByUserId(Long userId);
+    Page<UserDTO> findUsersInGroup(Long groupId, Pageable pageable);
 }
