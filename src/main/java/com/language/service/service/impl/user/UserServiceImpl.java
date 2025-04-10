@@ -1,15 +1,5 @@
 package com.language.service.service.impl.user;
 
-import org.mapstruct.factory.Mappers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import com.language.service.common.Constants;
 import com.language.service.common.ConstantsErrorCode;
 import com.language.service.domain.dtos.GroupDTO;
@@ -30,7 +20,20 @@ import com.language.service.rest.dto.response.BaseResponseDTO;
 import com.language.service.service.AbstractService;
 import com.language.service.service.abs.user.UserService;
 import com.language.service.storage.StorageService;
+import org.mapstruct.factory.Mappers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -114,10 +117,9 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
         }
     }
 
-
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public UserDTO create(CreateUserRequest cmd) {
+    public UserDTO create(CreateUserRequest cmd) throws IOException {
         try {
             User authUser = Mappers.getMapper(UserMapper.class).create(cmd);
             List<User> username = userRepo.checkUserExist(cmd.getUsername(), null);
@@ -129,12 +131,29 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
             String hashedPassword = passwordEncoder.encode(cmd.getPassword());
             authUser.setPassword(hashedPassword);
             authUser.setDeleted(Constants.DELETE.INACTIVE);
+//
+//            if (cmd.getAvatar() != null && !cmd.getAvatar().isEmpty()) {
+//                String avatarPath = saveAvatarFile(cmd.getAvatar());
+//                authUser.setAvatar(avatarPath);
+//            }
+
             userRepo.save(authUser);
             return Mappers.getMapper(UserMapper.class).toDto(authUser);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;
         }
+    }
+
+    private String saveAvatarFile(MultipartFile file) throws IOException {
+        if (!"image/jpeg".equals(file.getContentType()) && !"image/png".equals(file.getContentType())) {
+            throw new BusinessException("Chỉ hỗ trợ file JPEG và PNG");
+        }
+        String uploadDir = "D:/VCRM";
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        File uploadFile = new File(uploadDir + "/" + fileName);
+        file.transferTo(uploadFile);
+        return fileName;
     }
 
     @Override
@@ -209,13 +228,28 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
     public BaseResponseDTO changeUserPassword(ChangeUserPasswordRequest command) {
         long userId = command.getId();
         Optional<User> optUser = userRepo.findById(userId);
-        if (optUser.isPresent()) {
-            String encryptedPassword = passwordEncoder.encode(command.getPassword());
-            User user = optUser.get();
-            user.setPassword(encryptedPassword);
-        } else {
+
+        if (optUser.isEmpty()) {
             throw new BusinessException(ConstantsErrorCode.USER.ERROR_USER_NOT_FOUND);
         }
+
+        User user = optUser.get();
+
+        // Kiểm tra mật khẩu cũ
+        if (!passwordEncoder.matches(command.getPasswordOld(), user.getPassword())) {
+            throw new BusinessException(ConstantsErrorCode.USER.ERROR_USER_PASSWORD_INCORRECT);
+        }
+
+        // Kiểm tra mật khẩu mới và cũ không được trùng nhau
+        if (command.getPassword().equals(command.getPasswordOld())) {
+            throw new BusinessException(ConstantsErrorCode.USER.ERROR_USER_PASSWORD_OLD_SAME_NEW);
+        }
+
+        // Mã hóa và cập nhật mật khẩu mới
+        String encryptedPassword = passwordEncoder.encode(command.getPassword());
+        user.setPassword(encryptedPassword);
+        userRepo.save(user);
+
         return new BaseResponseDTO();
     }
 
@@ -275,5 +309,14 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
             logger.error(e.getMessage(), e);
             throw e;
         }
+    }
+
+    @Override
+    public UserDTO getUserById(Long id) {
+        Optional<User> optionalUser = userRepo.findById(id, Constants.DELETE.INACTIVE);
+        User user = optionalUser.orElseThrow(()
+                -> new BusinessException(ConstantsErrorCode.USER.ERROR_USER_NOT_FOUND)
+        );
+        return userMapper.toDto(user);
     }
 }

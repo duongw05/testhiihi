@@ -24,6 +24,7 @@ import com.language.service.service.abs.user.UserDetailsService;
 import com.language.service.service.abs.user.UserSearchService;
 import com.language.service.service.abs.user.UserService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,7 +52,6 @@ public class UserController {
     }
 
     @PostMapping("/search")
-    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.USER).SEARCH_USER)")
     public ResponseEntity<?> getUsers(@RequestBody UserSearchParams params, Pageable pageable) {
         pageable = Utils.getDefaultSortPageable(pageable);
         Page<UserDTO> dtoPage = userSearchService.searchUser(params, pageable);
@@ -59,26 +59,22 @@ public class UserController {
     }
 
     @PostMapping("/update")
-    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.USER).UPDATE_USER)")
     @CacheEvict(cacheNames = {Constants.CACHE_KEY_NAME.CACHE_MENU_ALL_KEY, Constants.CACHE_KEY_NAME.CACHE_ME_PERMISSION_KEY}, allEntries = true)
     public ResponseEntity<?> createUser(@Valid @RequestBody UpdateUserRequest cmd) {
         return responseFactory.success(userService.update(cmd));
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.USER).ADD_USER)")
-    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest cmd) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest cmd) throws IOException {
         return responseFactory.success(userService.create(cmd));
     }
 
     @DeleteMapping(value = "/delete/{id}")
-    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.USER).DELETE_USER)")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         return responseFactory.success(userService.deleteUser(id));
     }
 
     @PutMapping("/changePassword")
-    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.USER).CHANGE_PASS_USER)")
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangeUserPasswordRequest command) {
         return responseFactory.success(userService.changeUserPassword(command));
     }
@@ -111,20 +107,17 @@ public class UserController {
         return userService.getNotLinkedGroups(id);
     }
 
-    @PreAuthorize("hasPermission('UNLINK_USER_GROUP')")
     @PutMapping("/{id}/unlinkGroup")
     public void unlinkGroup(@PathVariable("id") long id, @Valid @RequestBody UnlinkUserGroupRequest command) {
         userService.unlinkGroup(id, command);
     }
 
-    @PreAuthorize("hasPermission('LINK_USER_GROUP')")
     @PutMapping("/{id}/linkGroups")
     public void linkGroups(@PathVariable("id") long userId, @Valid @RequestBody LinkGroupsRequest command) {
         userService.linkGroups(userId, command);
     }
 
     @PutMapping("update-profile")
-    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.USER).UPDATE_USER)")
     public ResponseEntity<?> updateProfileUser(@RequestBody UpdateUserProfileRequest command) {
         return responseFactory.success(userService.updateUserProfile(command));
     }
@@ -132,5 +125,10 @@ public class UserController {
     @PostMapping("get-all")
     public ResponseEntity<?> getAllUser() {
         return responseFactory.success(userService.getAllUser());
+    }
+
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        return responseFactory.success(userService.getUserById(id));
     }
 }

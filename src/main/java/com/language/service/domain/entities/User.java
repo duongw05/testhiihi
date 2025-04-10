@@ -8,6 +8,7 @@ import com.language.service.domain.dtos.GroupIdDTO;
 import com.language.service.domain.dtos.MenuCodeDTO;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -95,6 +96,16 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "full_name")
     private String fullName;
 
+    @Column(name = "DOB")
+    @Temporal(TemporalType.DATE)
+    private Date dob;
+
+    @Column(name = "GENDER")
+    private Integer gender;
+
+    @Column(name = "AVATAR")
+    private String avatar;
+
     @Column(name = "LOCALE")
     private String locale;
 
@@ -106,8 +117,5 @@ public class User extends BaseEntity implements Serializable {
 
     @Column(name = "investigation_code")
     private String investigationCode;
-
-    @Column(name = "avatar_id")
-    private Long avatar;
 
 }

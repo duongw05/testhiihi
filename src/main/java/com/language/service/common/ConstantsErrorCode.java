@@ -72,6 +72,8 @@ public class ConstantsErrorCode {
         public static final String ERROR_USER_INVESTIGATION_ID = "ERROR.USER.INVESTIGATION_ID";
         public static final String ERROR_USER_INVESTIGATION_CODE = "ERROR.USER.INVESTIGATION_CODE";
         public static final String ERROR_USER_INVESTIGATION_CODE_MAXLENGTH = "ERROR.USER.INVESTIGATION_CODE_MAXLENGTH";
+        public static final String ERROR_USER_PASSWORD_INCORRECT = "ERROR.USER.PASSWORD.INCORRECT";
+        public static final String ERROR_USER_PASSWORD_OLD_SAME_NEW = "ERROR.USER.PASSWORD.OLD.SAME.NEW";
     }
 
     public static class PERMISSION {

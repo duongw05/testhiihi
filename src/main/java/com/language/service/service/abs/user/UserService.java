@@ -9,6 +9,7 @@ import com.language.service.rest.dto.request.*;
 import com.language.service.rest.dto.response.BaseResponseDTO;
 import com.language.service.service.abs.base.BaseService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public interface UserService extends BaseService<User, Long> {
 
     BaseResponseDTO update(UpdateUserRequest cmd);
 
-    UserDTO create(CreateUserRequest cmd);
+    UserDTO create(CreateUserRequest cmd) throws IOException;
 
     boolean existsByUsername(String username);
 
@@ -50,5 +51,6 @@ public interface UserService extends BaseService<User, Long> {
     /**Cập nhật profile cho người dùng*/
     BaseResponseDTO updateUserProfile(UpdateUserProfileRequest cmd);
     List<UserDTO> getAllUser();
+    UserDTO getUserById(Long id);
 
 }

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ActionDetailMapper {
-    @Mapping(source = "actionAudit.id", target = "actionAuditId")
+    @Mapping(source = "actionAuditId", target = "actionAuditId")
     ActionDetailDTO toDto(ActionDetail model);
 
     List<ActionDetailDTO> toDtoList(List<ActionDetail> lsModels);
