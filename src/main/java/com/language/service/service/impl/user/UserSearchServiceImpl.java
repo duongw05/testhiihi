@@ -46,24 +46,8 @@ public class UserSearchServiceImpl extends BaseSearchServiceImpl<UserDTO, UserSe
         try {
             String username = DataUtils.makeLikeQuery(params.getUsername());
             String fullName = DataUtils.makeLikeQuery(params.getFullName());
-            Page<User> search = userRepo.search(username, fullName, params.getEnabled(), params.getGroupIds(), Constants.DELETE.INACTIVE, pageable); // ko dung join fetch vs page vi no select het len cache tren ram va phan trang
+            Page<User> search = userRepo.search(username, fullName, params.getPhone(), params.getEmail(), params.getEnabled(), Constants.DELETE.INACTIVE, pageable); // Không dùng join fetch với page vì nó select hết lên cache trên RAM và phân trang
             Page<UserDTO> dtoPage = new PageImpl<>(Mappers.getMapper(UserMapper.class).toDto(search.getContent()), pageable, search.getTotalElements());
-            if (!DataUtils.isNullOrEmpty(dtoPage.getContent())) {
-                List<Long> usersId = dtoPage.getContent().stream().map(UserDTO::getId).toList();
-                List<GroupUserDTO> groupsInListUser = userService.groupUserDTOS(usersId);
-                for (UserDTO userDTO : dtoPage.getContent()) {
-                    List<String> groups = new ArrayList<String>();
-                    List<Long> groupsId = new ArrayList<>();
-                    for (GroupUserDTO groupUserDTO : groupsInListUser) {
-                        if (userDTO.getId() != null && groupUserDTO.getUserId() != null && Objects.equals(userDTO.getId(), groupUserDTO.getUserId())) {
-                            groups.add(groupUserDTO.getName());
-                            groupsId.add(groupUserDTO.getId());
-                        }
-                    }
-                    if (!groupsId.isEmpty()) userDTO.setGroupIds(groupsId);
-                    if (!groups.isEmpty()) userDTO.setGroups(String.join(", ", groups));
-                }
-            }
             Page<UserDTO> numberedList = PageUtils.setSerialNumbers(dtoPage, pageable, UserDTO::setStt);
             return new PageImpl<>(numberedList.getContent(), Objects.requireNonNullElseGet(pageable, Pageable::unpaged), search.getTotalElements());
         } catch (Exception e) {

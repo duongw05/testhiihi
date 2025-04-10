@@ -45,4 +45,6 @@ public class UpdateUserRequest {
 
     @NotNull(message = ConstantsErrorCode.USER.ERROR_USER_STATUS)
     private boolean enabled;
+
+    private String avatar;
 }

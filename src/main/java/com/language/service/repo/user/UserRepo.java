@@ -25,16 +25,14 @@ public interface UserRepo extends JpaRepository<User, Long>, UserRepoCustom {
     Optional<User> findByPhone(String phone);
 
     @Query("select distinct s from User s" +
-            " left join UserGroupMap ugm on ugm.userId = s.id" +
-            " left join Group g on g.id = ugm.groupId" +
             " where (s.username like :username escape '\\' or :username is null) " +
             " and (s.fullName like :fullName escape '\\' or :fullName is null)" +
+            " and (s.phone like :phone escape '\\' or :phone is null)" +
+            " and (s.email like :email escape '\\' or :email is null)" +
             " and (s.enabled = :enabled or :enabled is null)" +
-            " and (:groupIds is null or  g.id in :groupIds)" +
-            " and s.deleted = :deleted" +
-            " and ugm.deleted = :deleted"
+            " and s.deleted = :deleted"
     )
-    Page<User> search(String username, String fullName, Boolean enabled, List<Long> groupIds, Integer deleted, Pageable pageable);
+    Page<User> search(String username, String fullName, String phone, String email, Boolean enabled, Integer deleted, Pageable pageable);
 
     @Query("from User i where lower(i.username) = lower(:username) and (i.id = :id or :id is null)")
     List<User> checkUserExist(String username, Long id);
