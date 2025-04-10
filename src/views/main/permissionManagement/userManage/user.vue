@@ -6,7 +6,7 @@
         <div class="box">
           <div class="layout-container-form flex space-between" style="padding-bottom: 15px">
             <el-form
-                ref="ruleFormRefAdvance"
+                ref="ruleFormRef"
                 :model="searchQuery"
                 :rules="rules"
                 style="width: 100%"
@@ -20,9 +20,9 @@
                     <el-row :gutter="24" style="margin: 0; width: 100%">
                       <el-col :xs="24" :md="6" :lg="8" class="form-item">
                         <el-form-item :size="'default'" :label="$t('message.menu.userManage.fullName')"
-                                      prop="fullname"
+                                      prop="fullName"
                                       style="display: inherit">
-                          <el-input v-model.lazy.trim="searchQuery.fullname" clearable></el-input>
+                          <el-input v-model.lazy.trim="searchQuery.fullName" clearable></el-input>
                         </el-form-item>
                       </el-col>
                       <el-col :xs="24" :md="6" :lg="8" class="form-item">
@@ -33,10 +33,10 @@
                         </el-form-item>
                       </el-col>
                       <el-col :xs="24" :md="6" :lg="8" class="form-item">
-                        <el-form-item :size="'default'" :label="$t('message.menu.userManage.tel')"
-                                      prop="tel"
+                        <el-form-item :size="'default'" :label="$t('message.menu.userManage.phone')"
+                                      prop="phone"
                                       style="display: inherit">
-                          <el-input v-model="searchQuery.tel"
+                          <el-input v-model="searchQuery.phone"
                                     @blur="deepTrim(searchQuery)"
                                     clearable></el-input>
                         </el-form-item>
@@ -48,31 +48,13 @@
                           <el-input v-model.lazy.trim="searchQuery.email" clearable></el-input>
                         </el-form-item>
                       </el-col>
-                      <el-col :xs="24" :md="6" :lg="8" class="form-item">
-                        <el-form-item :size="'default'" :label="$t('message.menu.userManage.role')"
-                                      prop="province"
-                                      style="display: inherit">
-                          <el-select v-model="searchQuery.role" clearable filterable
-                                     :placeholder="$t('message.common.placeholderAll')"
-                                     reserve-keyword
-                                     style="width: 100%"
-                          >
-                            <el-option :value="null" :label="$t('message.common.placeholderAll')"/>
-                            <el-option
-                                v-for="item in areaData"
-                                :key="item?.code"
-                                :label="item.name"
-                                :value="item?.code"
-                            />
-                          </el-select>
-                        </el-form-item>
-                      </el-col>
                     </el-row>
                     <div class="button-container center mb-5 mt-5">
                       <el-button :icon="RefreshRight" plain size="default" @click="resetForm">
                         {{ $t('message.common.reEnter') }}
                       </el-button>
-                      <el-button :icon="Search" size="default" type="primary" color="var(--system-primary-color)">{{
+                      <el-button :icon="Search" size="default" type="primary" color="var(--system-primary-color)"
+                                 @click="handleSearch">{{
                           $t('message.common.search')
                         }}
                       </el-button>
@@ -95,7 +77,7 @@
                       {{ $t('message.common.searchResult') }}
                       ({{ pagination.total }})</h3>
                     <div style="display: flex; justify-content: right; width: 100%; margin-right: 20px">
-                      <el-button :icon="Download" :loading="false"
+                      <el-button :icon="Download" :loading="loading"
                                  size="default" plain
                                  @click.stop="">{{ $t('message.common.export') }}
                       </el-button>
@@ -107,7 +89,7 @@
                     </div>
                   </template>
                   <div class="layout-container-table">
-                    <el-table v-loading="false"
+                    <el-table v-loading="loading"
                               :data="tableData"
                               :header-cell-style="{background:'#DDE1E6', color: 'rgba(0,0,0,0.8)'}"
                               :row-style="(data: any) => data.row.status === 2 ? {background: '#FFF8F8', color: '#424242'} : {}"
@@ -134,11 +116,11 @@
                                          width="200"
                                          header-align="center" prop="fullName" sortable/>
                         <el-table-column :label="$t('message.menu.userManage.dob')" align="center"
-                                         header-align="center" prop="dob" sortable/>
-                        <el-table-column :label="$t('message.menu.userManage.gender')" align="center"
-                                         header-align="center" prop="gender" sortable/>
-                        <el-table-column :label="$t('message.menu.userManage.tel')" align="right"
-                                         header-align="center" prop="tel" sortable/>
+                                         header-align="center" prop="dobStr" sortable/>
+                        <el-table-column :label="$t('message.menu.userManage.gender')" align="left"
+                                         header-align="center" prop="genderStr" sortable/>
+                        <el-table-column :label="$t('message.menu.userManage.phone')" align="right"
+                                         header-align="center" prop="phone" sortable/>
                         <el-table-column :label="$t('message.menu.userManage.email')" align="left"
                                          width="200"
                                          header-align="center" prop="email" sortable/>
@@ -149,9 +131,14 @@
                                 <el-button :icon="Document"
                                            style="width: 15px; margin: 0"
                                            text
-                                           type="danger"
-                                           @click="navigatePartner(scope.row.dob)"
+                                           type="info"
+                                           @click="navigatePartner(scope.row.id)"
                                 ></el-button>
+                              </el-tooltip>
+                              <el-tooltip :content="'Xóa'" placement="top">
+                                <el-button style="width: 15px; margin: 0" type="danger" text :icon="Delete"
+                                           @click="delUser(scope.row)">
+                                </el-button>
                               </el-tooltip>
                             </div>
                           </template>
@@ -184,13 +171,16 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, ref} from 'vue'
+import {defineComponent, onMounted, reactive, ref} from 'vue'
 import {Delete, Document, Download, Edit, Plus, Refresh, RefreshRight, Search, Tickets} from "@element-plus/icons";
 import {deepTrim} from "@/utils/mixins/mixin";
 import {validate} from "vee-validate";
 import UserForm from "@/views/main/permissionManagement/userManage/userForm.vue";
 import {useI18n} from 'vue-i18n';
 import {useRouter} from "vue-router";
+import {deleteUser, getUserList} from "@/api/user";
+import {validateEmailInvalid} from "@/utils/validate/helpers";
+import {ElMessage, ElMessageBox, FormInstance} from "element-plus";
 
 export default defineComponent({
   computed: {
@@ -230,38 +220,15 @@ export default defineComponent({
     validate
   },
   setup(props, ctx) {
+    const ruleFormRef = ref<FormInstance>()
+    let loading = ref(false)
     const router = useRouter();
     const {t} = useI18n();
     const visibleDrawer = ref<boolean>(false)
-    const tableData = ref([
-      {
-        username: 'vinhtq',
-        fullName: 'Thiều Quang Vinh',
-        dob: '19/08/2002',
-        gender: 'Nam',
-        tel: '0339874550',
-        email: 'vinhtq@nodo.vn'
-      },
-      {
-        username: 'vinhtq2',
-        fullName: 'Thiều Quang Vinh 2',
-        dob: '19/08/2002',
-        gender: 'Nữ',
-        tel: '0339874550',
-        email: 'vinhtq2@nodo.vn'
-      },
-      {
-        username: 'vinhtq3',
-        fullName: 'Thiều Quang Vinh 3',
-        dob: '19/08/2002',
-        gender: 'Nam',
-        tel: '0339874550',
-        email: 'vinhtq3@nodo.vn'
-      }
-    ]);
+    const tableData = ref([]);
     const titleDrawer = ref('')
     const collapseName = ref('1')
-    const pagination = reactive({
+    const pagination = ref({
       current: 1,
       total: 0,
       pageSize: 10,
@@ -269,40 +236,134 @@ export default defineComponent({
     });
     const searchQuery = reactive(
         {
-          fullname: null,
+          fullName: null,
           username: null,
-          tel: null,
+          phone: null,
           email: null,
           role: null
         }
     );
-    const rules = {}
-    const areaData = ref([
-      {code: 'admin', name: 'Admin'},
-      {code: 'hr', name: 'HR'},
-      {code: 'scheduler', name: 'Scheduler'},
-      {code: 'am', name: 'AM'},
-      {code: 'ac', name: 'AC'},
-      {code: 'gv', name: 'GV'},
-      {code: 'tg', name: 'TG'}
-    ]);
+    const rules = {
+      phone: [
+        {min: 10, max: 11, message: 'Số điện thoại tối đa 10-11 ký tự', trigger: ['blur', 'change']},
+        {
+          validator: (rule: any, value: any, callback: any) => {
+            if (!value) {
+              callback()
+            }
+            const phonePattern = /^0\d{9,10}$/;
+            const containsLetters = /[a-zA-Z]/;
 
-    const resetForm = () => {
-      Object.assign(searchQuery, {
-        fullname: null,
-        username: null,
-        tel: null,
-        email: null,
-        role: null
+            if (containsLetters.test(value)) {
+              callback(new Error('Số điện thoại chỉ cho phép nhập số'));
+            } else if (!phonePattern.test(value)) {
+              callback(new Error('Số điện thoại phải bắt đầu bằng 0'));
+            } else {
+              callback();
+            }
+          },
+          trigger: ['blur', 'change']
+        }
+      ],
+      username: [
+        {max: 50, message: 'Tên đăng nhập tối đa 50 ký tự', trigger: ['blur', 'change']},
+        {
+          pattern: /^[a-zA-Z0-9]+$/,
+          message: 'Tên đăng nhập chỉ được phép chứa chữ không dấu và số',
+          trigger: ['blur', 'change']
+        }
+      ],
+      email: [
+        {min: 0, max: 100, message: 'Email tối đa 100 ký tự', trigger: ['blur', 'change']},
+        {validator: (rule: any, value: any, callback: any) => validateEmailInvalid(rule, value, callback, t, 'Email')}
+      ]
+    }
+
+    const delUser = async (user: any) => {
+      ElMessageBox.confirm(
+          'Bạn có chắc muốn xóa bản ghi này?',
+          'Xác nhận',
+          {
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+
+          }
+      )
+          .then(async () => {
+            try {
+              loading.value = true;
+              await deleteUser(user)
+              loading.value = false;
+              ElMessage({
+                type: 'success',
+                message: 'Xóa người dùng thành công!'
+              })
+              await getData();
+            } catch (error) {
+              console.error(error);
+              ElMessage({
+                type: 'error',
+                message: 'Xóa người dùng thất bại!'
+              })
+            }
+          })
+          .catch((e) => {
+            console.error(e)
+          })
+    }
+
+    const handleSearch = () => {
+      pagination.value = {
+        current: 1,
+        total: 0,
+        pageSize: 10,
+        size: 10,
+      };
+
+      ruleFormRef.value?.validate((valid) => {
+        if (valid) {
+          getData();
+        } else {
+          tableData.value = []
+          console.warn('Validation failed!');
+        }
       });
     }
 
+    const getData = async () => {
+      try {
+        if (loading.value) return;
+        loading.value = true;
+        pagination.value.current = pagination.value.current - 1;
+        const {data} = await getUserList(searchQuery, pagination.value);
+        loading.value = false;
+        tableData.value = data.data.content;
+        pagination.value.current = data.data.number + 1;
+        pagination.value.total = data.data.totalElements;
+      } catch (e) {
+        console.log(e)
+        loading.value = false
+      }
+    }
+
+    const resetForm = () => {
+      Object.assign(searchQuery, {
+        fullName: null,
+        username: null,
+        phone: null,
+        email: null,
+        role: null
+      })
+      getData()
+    }
+
     const handlePageSize = (size: number) => {
-      pagination.pageSize = size;
+      pagination.value.pageSize = size;
     };
 
     const handleCurrent = (page: number) => {
-      pagination.current = page;
+      pagination.value.current = page;
     };
 
     const openDrawer = () => {
@@ -311,17 +372,23 @@ export default defineComponent({
     }
 
     const handleClose = () => {
-      visibleDrawer.value = false;
+      visibleDrawer.value = false
+      getData()
     }
 
     const navigatePartner = (id?: any) => {
       router.push({name: 'user-detail', params: {data: id}});
     }
 
+    onMounted(() => {
+      handleSearch()
+    })
+
     return {
+      ruleFormRef,
+      loading,
       titleDrawer,
       visibleDrawer,
-      areaData,
       rules,
       searchQuery,
       collapseName,
@@ -332,7 +399,9 @@ export default defineComponent({
       handleCurrent,
       resetForm,
       openDrawer,
-      handleClose
+      handleClose,
+      handleSearch,
+      delUser
     }
   },
 })

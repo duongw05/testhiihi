@@ -52,7 +52,7 @@
                         :label="'SĐT'"
           >
               <el-input
-                  v-model="formData.cellphone"
+                  v-model="formData.phone"
                   :disabled="isViewMode"
               />
           </el-form-item>
@@ -136,7 +136,7 @@ export default defineComponent({
 .title-dialog {
   font-size: 18px;
   line-height: 24px;
-  color: white;
+  color: #1f1f1f;
   margin-bottom: 5px;
   margin-top: 5px;
   text-align: left;

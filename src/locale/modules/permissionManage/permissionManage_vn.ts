@@ -15,7 +15,7 @@ export const permissionManage = {
         email: 'Email',
         startDate: 'Ngày bắt đầu ',
         endDate: 'Ngày kết thúc',
-        tel: 'Số điện thoại',
+        phone: 'Số điện thoại',
         createUser: 'Thêm mới người dùng',
         updateUser: 'Cập nhật người dùng',
         male: 'Nam',
