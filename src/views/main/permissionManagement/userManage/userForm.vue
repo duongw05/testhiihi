@@ -22,7 +22,8 @@
         </el-col>
 
         <el-col :xs="24" :md="12" :lg="12" class="form-item">
-          <el-form-item :label="$t('message.menu.userManage.gender')" :size="'default'" style="display: inherit">
+          <el-form-item prop="gender" :label="$t('message.menu.userManage.gender')" :size="'default'"
+                        style="display: inherit">
             <el-tooltip :content="$t('message.menu.userManage.gender')" placement="top">
               <el-select v-model="formData.gender"
                          :placeholder="$t('message.common.chooseValue')" style="width: 100%"
@@ -40,8 +41,8 @@
         </el-col>
 
         <el-col :xs="24" :md="12" :lg="12" class="form-item">
-          <el-form-item prop="tel" :label="$t('message.menu.userManage.tel')" :size="'default'">
-            <el-input v-model="formData.tel" clearable
+          <el-form-item prop="phone" :label="$t('message.menu.userManage.phone')" :size="'default'">
+            <el-input v-model="formData.phone" clearable
                       @blur="deepTrim(formData)"/>
           </el-form-item>
         </el-col>
@@ -76,14 +77,14 @@
 
         <el-col :xs="24" :md="12" :lg="12" class="form-item">
           <el-form-item prop="password" :label="$t('message.menu.userManage.password')" :size="'default'">
-            <el-input v-model="formData.password" clearable
+            <el-input v-model="formData.password" clearable show-password
                       @blur="deepTrim(formData)"/>
           </el-form-item>
         </el-col>
 
         <el-col :xs="24" :md="12" :lg="12" class="form-item">
           <el-form-item prop="confirmPassword" :label="$t('message.menu.userManage.confirmPassword')" :size="'default'">
-            <el-input v-model="formData.confirmPassword" clearable
+            <el-input v-model="formData.confirmPassword" clearable show-password
                       @blur="deepTrim(formData)"/>
           </el-form-item>
         </el-col>
@@ -106,12 +107,13 @@
 
 <script lang="ts">
 import {defineComponent, reactive, ref, watch} from "vue";
-import {ElMessageBox, FormInstance} from 'element-plus'
+import {ElMessage, ElMessageBox, FormInstance} from 'element-plus'
 import {deepTrim} from "@/utils/mixins/mixin";
 import {useI18n} from "vue-i18n";
 import {CircleCloseFilled, CirclePlus, Close} from "@element-plus/icons";
 import {useRouter} from "vue-router";
 import {createUser} from "@/api/user";
+import {validateEmailInvalid} from "@/utils/validate/helpers";
 
 export default defineComponent({
   components: {},
@@ -143,23 +145,78 @@ export default defineComponent({
     const formRef = ref<FormInstance>();
     const formData = reactive({
       id: null,
-      username: '',
-      password: '',
-      confirmPassword: '',
-      gender: '',
-      dob: '',
-      role: '',
-      fullName: '',
-      email: '',
-      tel: '',
+      username: null,
+      password: null,
+      confirmPassword: null,
+      gender: null,
+      dob: null,
+      fullName: null,
+      email: null,
+      phone: null,
       enabled: true,
+      avatar: null as Blob | null,
+      avatarUrl: ''
     });
-    const ruleForm = reactive({})
+    const ruleForm = reactive({
+      fullName: [{required: true, message: 'Vui lòng nhập Tên người dùng ', trigger: 'blur'}],
+      gender: [{required: true, message: 'Vui lòng chọn Giới tính ', trigger: 'blur'}],
+      phone: [
+        {required: true, message: 'Vui lòng nhập Số điện thoại ', trigger: 'blur'},
+        {min: 10, max: 11, message: 'Số điện thoại tối đa 10-11 ký tự', trigger: ['blur', 'change']},
+        {
+          validator: (rule: any, value: any, callback: any) => {
+            if (!value) {
+              callback()
+            }
+            const phonePattern = /^0\d{9,10}$/;
+            const containsLetters = /[a-zA-Z]/;
+
+            if (containsLetters.test(value)) {
+              callback(new Error('Số điện thoại chỉ cho phép nhập số'));
+            } else if (!phonePattern.test(value)) {
+              callback(new Error('Số điện thoại phải bắt đầu bằng 0'));
+            } else {
+              callback();
+            }
+          },
+          trigger: ['blur', 'change']
+        }
+      ],
+      email: [
+        {required: true, message: 'Vui lòng nhập Email', trigger: 'blur'},
+        {min: 0, max: 100, message: 'Email tối đa 100 ký tự', trigger: ['blur', 'change']},
+        {validator: (rule: any, value: any, callback: any) => validateEmailInvalid(rule, value, callback, t, 'Email')}
+      ],
+      dob: [{required: true, message: 'Vui lòng chọn Ngày sinh ', trigger: 'blur'}],
+      username: [
+        {required: true, message: 'Vui lòng nhập Tên đăng nhập', trigger: 'blur'},
+        {max: 50, message: 'Tên đăng nhập tối đa 50 ký tự', trigger: ['blur', 'change']},
+        {
+          pattern: /^[a-zA-Z0-9]+$/,
+          message: 'Tên đăng nhập chỉ được phép chứa chữ không dấu và số',
+          trigger: ['blur', 'change']
+        }
+      ],
+      password: [{required: true, message: 'Vui lòng nhập Mật khẩu', trigger: 'blur'}],
+      confirmPassword: [
+        {required: true, message: 'Vui lòng nhập Xác nhận mật khẩu', trigger: 'blur'},
+        {validator: (rule: any, value: any, callback: any) => validateConfirmPassword(rule, value, callback)}
+      ],
+    })
     const lstGender = ref([
-      {name: t('message.menu.userManage.male'), code: '0'},
-      {name: t('message.menu.userManage.female'), code: '1'},
-      {name: t('message.menu.userManage.other'), code: '2'}
+      {name: t('message.menu.userManage.male'), code: 0},
+      {name: t('message.menu.userManage.female'), code: 1},
+      {name: t('message.menu.userManage.other'), code: 2}
     ])
+
+    const validateConfirmPassword = (rule: any, value: any, callback: any) => {
+      const password = formData.password; // Tìm giá trị của trường password từ form
+      if (value !== password) {
+        callback(new Error('Mật khẩu xác nhận không khớp'));
+      } else {
+        callback(); // Xác nhận thành công
+      }
+    };
 
     const onSubmit = async (formEl: FormInstance | undefined) => {
       if (!formEl) return
@@ -167,13 +224,20 @@ export default defineComponent({
         if (valid) {
           try {
             loading.value = true
-            const result = await createUser(formData)
-            console.log(result)
+            await createUser(formData)
             loading.value = false
             visibleValue.value = false
+            ElMessage({
+              type: 'success',
+              message: 'Thêm người dùng thành công!'
+            })
           } catch (e) {
             console.log(e)
             loading.value = false
+            ElMessage({
+              type: 'error',
+              message: 'Thêm người dùng thất bại!'
+            })
           }
         }
       })
@@ -198,12 +262,36 @@ export default defineComponent({
         role: '',
         fullName: '',
         email: '',
-        phone: ''
+        phone: '',
+        avatar: '',
+        avatarUrl: ''
       }
       Object.assign(formData, data);
     }
 
-    console.log('router.currentRoute.value.params ', router.currentRoute.value.params.data)
+    const beforeAvatarUpload = (file: { type: string; size: number }) => {
+      console.log('file.type ', file.type)
+      const isJPG = file.type === 'image/jpeg';
+      const isPNG = file.type === 'image/png';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG && !isPNG) {
+        ElMessage.error('Ảnh đại diện phải là JPG hoặc PNG!');
+        return false
+      }
+      if (!isLt2M) {
+        ElMessage.error('Ảnh đại diện không được lớn hơn 2MB!');
+        return false
+      }
+      return true
+    }
+
+    const handleAvatarChange = (file: { type: string; size: number; raw: Blob | MediaSource }) => {
+      if (beforeAvatarUpload(file)) {
+        formData.avatar = file.raw as Blob
+        formData.avatarUrl = URL.createObjectURL(file.raw)
+      }
+    }
 
     watch(() => props.visible, async () => {
       if (props.visible) {
@@ -221,7 +309,9 @@ export default defineComponent({
       title,
       loading,
       onSubmit,
-      closeDialog
+      closeDialog,
+      handleAvatarChange,
+      beforeAvatarUpload
     }
   }
 })

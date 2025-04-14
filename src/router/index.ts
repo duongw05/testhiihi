@@ -28,7 +28,6 @@ router.beforeEach(async (to, _from, next) => {
     to.meta.title ? (changeTitle(to.meta.title)) : "" // 动态title
     if (store.state.user.token) {
         to.meta.title ? (changeTitle(to.meta.title)) : "" // 动态title
-        console.log("to", to)
         if (to.path === '/login') {
             next('/')
             return

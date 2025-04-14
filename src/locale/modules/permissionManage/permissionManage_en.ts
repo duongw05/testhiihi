@@ -15,7 +15,7 @@ export const permissionManage = {
         email: 'Email',
         startDate: 'Start Date',
         endDate: 'End Date',
-        tel: 'Tel',
+        phone: 'Phone Number',
         createUser: 'Create User',
         updateUser: 'Update User',
         male: 'Male',

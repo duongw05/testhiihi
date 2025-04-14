@@ -11,7 +11,8 @@
       </div>
       <div class="welcome-message">
       </div>
-      <el-form :model="form" @submit.native.prevent="submit" label-position="left" label-width="100px">
+      <el-form v-if="!isShowForgot" :model="form" @submit.native.prevent="submit" label-position="left"
+               label-width="100px">
         <el-form-item :label="$t('message.system.userName') + ':'">
           <el-input
               size="large"
@@ -44,12 +45,54 @@
             </template>
           </el-input>
         </el-form-item>
+        <div style="text-align: right; margin-top: -10px; margin-bottom: 10px;">
+          <span class="forgot-password" @click="handleForgot">
+            Quên mật khẩu
+          </span>
+        </div>
         <el-form-item>
           <el-button style="font-family: sans-serif;font-size: 18px;font-weight: bold; margin-top: 10px;"
                      :loading="form.loading"
-                     type="primary" color="var(--system-primary-color)" native-type="submit" size="large">{{ $t('message.system.login') }}
+                     type="primary" color="var(--system-primary-color)" native-type="submit" size="large">
+            {{ $t('message.system.login') }}
           </el-button>
         </el-form-item>
+      </el-form>
+
+      <el-form v-if="isShowForgot" :model="form" @submit.native.prevent="submit" label-position="left"
+               label-width="100">
+        <el-form-item :label="$t('message.system.userName') + ':'">
+          <el-input
+              size="large"
+              v-model="form.name"
+              :placeholder="$t('message.system.userName')"
+              type="text"
+              maxlength="50"
+          >
+            <template #prepend>
+              <i class="sfont system-xingmingyonghumingnicheng"></i>
+            </template>
+          </el-input>
+        </el-form-item>
+
+        <div>
+          <el-row :gutter="24" justify="center">
+            <el-col :xs="24" :md="12" :lg="7">
+              <el-button style="font-family: sans-serif;font-size: 18px;font-weight: bold; margin-top: 10px;"
+                         type="primary" color="var(--system-primary-color)" native-type="submit" size="large"
+                         @click="backToLogin">
+                Quay lại
+              </el-button>
+            </el-col>
+            <el-col :xs="24" :md="12" :lg="8">
+              <el-button style="font-family: sans-serif;font-size: 18px;font-weight: bold; margin-top: 10px;"
+                         :loading="form.loading"
+                         type="primary" color="var(--system-primary-color)" native-type="submit" size="large">
+                Quên mật khẩu
+              </el-button>
+            </el-col>
+          </el-row>
+        </div>
       </el-form>
       <div class="company-address">
       </div>
@@ -62,17 +105,19 @@ import {systemSubTitle, systemTitle} from '@/config'
 import {defineComponent, reactive, ref} from 'vue'
 import {useStore} from 'vuex'
 import {useRoute, useRouter} from 'vue-router'
-import {ElMessage} from 'element-plus'
+import {ElCol, ElMessage} from 'element-plus'
 import selectLang from '@/layout/components/functionList/word.vue'
 import loginLeftPng from '@/assets/login/logo.png';
 import {useI18n} from 'vue-i18n'
-import { getAuthRoutes } from '@/router/permission'
+import {getAuthRoutes} from '@/router/permission'
 
 export default defineComponent({
   components: {
+    ElCol,
     selectLang
   },
   setup() {
+    const isShowForgot = ref<boolean>(false)
     const store = useStore()
     const router = useRouter()
     const route = useRoute()
@@ -133,14 +178,26 @@ export default defineComponent({
             })
           })
     }
+
+    const handleForgot = () => {
+      isShowForgot.value = true
+    }
+
+    const backToLogin = () => {
+      isShowForgot.value = false
+    }
+
     return {
+      isShowForgot,
       loginLeftPng,
       systemTitle,
       systemSubTitle,
       form,
       passwordType,
       passwordTypeChange,
-      submit
+      submit,
+      handleForgot,
+      backToLogin
     }
   }
 })
@@ -344,12 +401,12 @@ export default defineComponent({
 }
 
 
-@media screen and (min-width: 1025px) and (max-width : 1920px) {
+@media screen and (min-width: 1025px) and (max-width: 1920px) {
 
   .company-name {
     font-size: 34px;
     text-align: center;
-    margin-top: 55% ; /* Ensure no additional margin */
+    margin-top: 55%; /* Ensure no additional margin */
   }
 
   .company-name-1 {
@@ -431,4 +488,14 @@ export default defineComponent({
   }
 }
 
+.forgot-password {
+  color: #1e1e1e;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: right;
+}
+
+.forgot-password:hover {
+  color: #595959;
+}
 </style>

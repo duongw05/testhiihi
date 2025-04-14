@@ -31,7 +31,7 @@ export function loginOutApi() {
 
 export function passwordChange(data: object) {
   return request({
-    url: '/client/api/v1/users/'+ data.id +'/changePassword',
+    url: '/client/api/v1/users/changePassword',
     method: 'put',
     data
   })
@@ -84,6 +84,13 @@ export function updateUser(data: object) {
     url: prefix + 'users/update',
     method: 'post',
     data
+  })
+}
+
+export function getUserById(id: number) {
+  return request({
+    url: prefix +'users/detail/' + id,
+    method: 'get',
   })
 }
 

@@ -15,11 +15,11 @@ export function phoneValidator (rule: any, value: any, callback: any, name: any)
 }
 
 
-export function validateEmailInvalid (rule: any, value: any, callback: any, name: any) {
+export function validateEmailInvalid (rule: any, value: any, callback: any, t: any, name: any) {
     if (value) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (emailRegex.test(value) === false) {
-            callback(new Error(name))
+        if (!emailRegex.test(value)) {
+            callback(new Error(t('validate.regex', {name: name})))
         } else {
             callback()
         }

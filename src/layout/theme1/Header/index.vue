@@ -22,19 +22,20 @@
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item @click="showUserLayer">Thông tin tài khoản</el-dropdown-item>
+              <el-dropdown-item @click="showPasswordLayer">{{ $t('message.system.changePassword') }}</el-dropdown-item>
               <el-dropdown-item @click="loginOut">{{ $t('message.system.loginOut') }}</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
       </div>
-<!--      <password-layer :layer="layer" v-if="layer.show" />-->
-      <user-popup :visible="layer.show" @close="layer.show = false" />
+      <password-layer :visible="isViewPass" @close="isViewPass = false" />
+      <user-popup :visible="isViewInfo" @close="isViewInfo = false" />
     </div>
   </header>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, reactive } from 'vue'
+import {defineComponent, computed, reactive, ref} from 'vue'
 import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
 import FullScreen from '../../components/functionList/fullscreen.vue'
@@ -57,14 +58,12 @@ export default defineComponent({
     UserPopup
   },
   setup() {
+    const isViewInfo = ref(false);
+    const isViewPass = ref(false);
     const store = useStore()
     const router = useRouter()
     const route = useRoute()
-    const layer = reactive({
-      show: false,
-      showButton: true
-    })
-    let user = store.state.user.info.userName
+    let user = store.state.user.info.username
     const isCollapse = computed(() => store.state.app.isCollapse)
     // isCollapse change to hide/show the sidebar
     const opendStateChange = () => {
@@ -77,11 +76,18 @@ export default defineComponent({
     }
 
     const showUserLayer = () => {
-      layer.show = true
+      isViewInfo.value = true
     }
+
+    const showPasswordLayer = () => {
+      isViewPass.value = true
+    }
+
     return {
+      isViewPass,
+      isViewInfo,
       isCollapse,
-      layer,
+      showPasswordLayer,
       opendStateChange,
       loginOut,
       showUserLayer,
