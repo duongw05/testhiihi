@@ -1,0 +1,27 @@
+version: '2'
+services:
+  language-link-api-services:
+    image: registry.nodo.vn/language-link/language-link-be:latest
+    restart: always
+    labels:
+      filebeat_enable: true
+    ports:
+      - "1061:1061"
+    volumes:
+      - language-link_be_log_volume:/logs
+      - language-link_be_data_volume:/app
+    networks:
+      - language-link_net
+  tang-thu-web-services:
+    image: registry.nodo.vn/language-link/language-link-fe:latest
+    restart: always
+    ports:
+      - "1060:1060"
+    networks:
+      - language-link_net
+networks:
+  language-link_net:
+    driver: bridge
+volumes:
+  language-link_be_log_volume:
+  language-link_be_data_volume:
