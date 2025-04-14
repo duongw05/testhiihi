@@ -34,13 +34,6 @@ export default defineComponent({
             "key": "code",
             "label": t('message.menu.functionManage.functionCode'),
             "placeholder": t('message.common.placeholder', {name: t('message.menu.functionManage.functionCode')}),
-            "rules": [
-              {
-                required: true,
-                message: t('validate.required', {name: t('message.menu.functionManage.functionCode')}),
-                trigger: 'blur'
-              },
-            ],
             "defaultValue": "",
           },
           {

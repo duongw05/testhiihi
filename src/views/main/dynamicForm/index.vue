@@ -49,6 +49,12 @@ export default defineComponent({
             "label": t('message.menu.functionManage.functionName'),
             "placeholder": t('message.common.placeholder', {name: t('message.menu.functionManage.functionName')}),
             "defaultValue": "",
+          },{
+            "type": "dateRange",
+            "key": "name1",
+            "label": t('message.menu.functionManage.functionName'),
+            "placeholder": t('message.common.placeholder', {name: t('message.menu.functionManage.functionName')}),
+            "defaultValue": "",
           },
         ]
       },

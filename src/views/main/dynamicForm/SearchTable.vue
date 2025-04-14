@@ -45,6 +45,32 @@
                         />
                       </el-select>
                     </template>
+                    <template v-else-if="filter.type === 'date'">
+                      <el-date-picker
+                          v-model="filters[filter.key]"
+                          type="date"
+                          :placeholder="filter.placeholder"
+                          format="YYYY-MM-dd"
+                          value-format="YYYY-MM-dd"
+                          :clearable="true"
+                          popper-class="custom-date-picker-popper"
+                      />
+                    </template>
+                    <template v-else-if="filter.type === 'dateRange'">
+                      <el-date-picker
+                          v-model="filters[filter.key]"
+                          type="daterange"
+                          range-separator="To"
+                          start-placeholder="Start Date"
+                          end-placeholder="End Date"
+                          format="YYYY-MM-DD"
+                          value-format="YYYY-MM-DD"
+                          :clearable="true"
+                          :popper-append-to-body="true"
+                          placement="bottom-start"
+                          @change="handleDateRangeChange(filter.key, $event)"
+                      />
+                    </template>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -246,6 +272,9 @@ export default defineComponent({
     watch(locale, () => {
       popupTitleName.value = props.config.title
     });
+    const handleDateRangeChange = async(value : any, event: any) => {
+      console.log(value, event)
+    }
 
     const fetchTableData = async () => {
       try {
@@ -360,6 +389,7 @@ export default defineComponent({
     return {
       t,
       filters,
+      handleDateRangeChange,
       rules,
       data,
       loading,
