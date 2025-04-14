@@ -13,5 +13,5 @@ COPY server.csr /etc/nginx/conf.d/cert/server.csr
 COPY server.key /etc/nginx/conf.d/cert/server.key
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 COPY firebase-messaging-sw.js /usr/share/nginx/html
-EXPOSE 9001
+EXPOSE 1060
 CMD ["nginx", "-g", "daemon off;"]
