@@ -2,6 +2,11 @@ export const permissionManage = {
     permissionManage: 'Permission Management',
     functionManage: {
         self: 'Manage function',
+        functionCode: 'Function code',
+        functionName: 'Function name',
+        description: 'Description',
+        status: 'Status',
+        functionInfo: 'function',
     },
     userManage: {
         self: 'Manage user',

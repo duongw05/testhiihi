@@ -22,7 +22,7 @@
     >
       <el-row :gutter="24">
         <template v-for="(field, index) in config.fields">
-          <el-col :span="field.span">
+          <el-col :span="field.type === 'textArea' ? 24 : field.span || 12">
             <el-form-item size="default" class="form-item"
                           :key="index"
                           :label="field.label"
@@ -48,6 +48,15 @@
                       :value="option.value"
                   />
                 </el-select>
+              </template>
+              <template v-else-if="field.type === 'textArea'">
+                <el-input
+                    type="textarea"
+                    v-model="formData[field.key]"
+                    :placeholder="field.placeholder"
+                    :disabled="field.disabled || isViewMode"
+                    :rows="field.rows || 4"
+                />
               </template>
             </el-form-item>
           </el-col>
@@ -119,7 +128,6 @@ export default defineComponent({
     });
 
     const onClose = () => {
-      console.log("vaof daay may lan")
       popupForm.value.clearValidate()
       resetForm()
       emit("close");

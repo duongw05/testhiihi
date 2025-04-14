@@ -4,7 +4,7 @@
       <el-collapse class="no-border-collapse" v-model="activeNames">
         <el-collapse-item name="1">
           <template #title>
-            <h3 class="style-header-box" style="margin-left: 4px">Thông tin tìm kiếm</h3>
+            <h3 class="style-header-box" style="margin-left: 4px">{{ t('message.common.searchInfo') }}</h3>
           </template>
           <div class="layout-container-form flex space-between">    <!-- Form điều kiện tìm kiếm -->
             <el-form
@@ -50,9 +50,11 @@
               </el-row>
               <el-row>
                 <el-col :span="24" class="filter-actions">
-                  <el-button :icon="RefreshRight" @click="onReset" size="default" plain>Nhập lại</el-button>
-                  <el-button type="primary" color="var(--system-primary-color)" @click="onSubmit" size="default">Tìm
-                    kiếm
+                  <el-button :icon="RefreshRight" @click="onReset" size="default" plain>
+                    {{ t('message.common.reEnter') }}
+                  </el-button>
+                  <el-button type="primary" color="var(--system-primary-color)" @click="onSubmit" size="default">
+                    {{ t('message.common.search') }}
                   </el-button>
                 </el-col>
               </el-row>
@@ -65,10 +67,10 @@
   <div class="box" style="margin-top: 12px">
     <div class="layout-container">
       <div class="button-container-table">
-        <h3 style="font-size: 14px; line-height: 16px">Kết quả tìm kiếm ({{ pagination.total }})</h3>
+        <h3 style="font-size: 14px; line-height: 16px">{{ t('message.common.searchResults')}} ({{ pagination.total }})</h3>
         <div class="button-group">
           <el-button :icon="Plus" @click="handleAddNew"
-                     color="var(--system-primary-color)" size="default" type="primary">Thêm mới
+                     color="var(--system-primary-color)" size="default" type="primary">{{ t('message.common.add') }}
           </el-button>
 
         </div>
@@ -91,11 +93,12 @@
               :label="column.label"
               :width="column.width"
               :align="column.align"
+              :formatter="column.formatter"
               border
               :header-align="column.headerAlign || 'center'"
           >
           </el-table-column>
-          <el-table-column label="Hành động" header-align="center" align="center" width="110" min-width="110"
+          <el-table-column :label="t('message.common.actions')" header-align="center" align="center" width="110" min-width="110"
                            border
                            fixed="right">
             <template #default="{ row }">
@@ -130,15 +133,15 @@
       </div>
     </div>
   </div>
-<!--  <dynamic-popup-->
-<!--      :visible="isPopupVisible"-->
-<!--      :config="config.popup"-->
-<!--      :title="popupTitle"-->
-<!--      :mode="popupMode"-->
-<!--      :initialData="selectedData"-->
-<!--      :onSave="handleSave"-->
-<!--      @close="handleClose"-->
-<!--  />-->
+  <!--  <dynamic-popup-->
+  <!--      :visible="isPopupVisible"-->
+  <!--      :config="config.popup"-->
+  <!--      :title="popupTitle"-->
+  <!--      :mode="popupMode"-->
+  <!--      :initialData="selectedData"-->
+  <!--      :onSave="handleSave"-->
+  <!--      @close="handleClose"-->
+  <!--  />-->
   <dynamic-drawer
       :visible="isPopupVisible"
       :config="config.popup"
@@ -157,6 +160,9 @@ import {Delete, Document, Edit, Key, MoreFilled, Plus, RefreshRight} from "@elem
 import DynamicPopup from "@/views/main/dynamicForm/DynamicPopup.vue";
 import DynamicDrawer from "@/views/main/dynamicForm/DynamicDrawer.vue";
 import {useI18n} from "vue-i18n";
+import {showConfirmDialog} from "@/utils/mixins/mixin";
+import {deleteGroup} from "@/api/roleManage/groupUser";
+
 
 export default defineComponent({
   name: "SearchTable1",
@@ -200,7 +206,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const {t} = useI18n();
+    const {t, locale} = useI18n();
     const filters = reactive({});
     const rules = reactive({});
     const activeNames = ref(['1'])
@@ -216,6 +222,7 @@ export default defineComponent({
     const isPopupVisible = ref(false);
     const popupMode = ref("add");
     const popupTitle = ref("");
+    const popupTitleName = ref("");
     const selectedData = ref({});
 
     const handlePageSize = (size: number) => {
@@ -229,12 +236,15 @@ export default defineComponent({
     }
     const filterForm = ref(null);
 
-    // Khởi tạo filters và rules
     props.config.searchForm.fields.forEach((filter: any) => {
       filters[filter.key] = filter.defaultValue || "";
       if (filter.rules) {
         rules[filter.key] = filter.rules;
       }
+    });
+
+    watch(locale, () => {
+      popupTitleName.value = props.config.title
     });
 
     const fetchTableData = async () => {
@@ -296,12 +306,12 @@ export default defineComponent({
     const handleAction = (type: string, row: any) => {
       if (type === "edit") {
         popupMode.value = "edit";
-        popupTitle.value = t('message.common.UpdateInfo', { name: t('message.menu.groupManage.groupName') });
+        popupTitle.value = t('message.common.updateInfo', {name:  popupTitleName.value});
         selectedData.value = {...row};
         isPopupVisible.value = true;
       } else if (type === "view") {
         popupMode.value = "view";
-        popupTitle.value = t('message.common.UpdateInfo');
+        popupTitle.value = t('message.common.viewInfo', {name:  popupTitleName.value});
         selectedData.value = {...row};
         isPopupVisible.value = true;
       } else if (type === "delete") {
@@ -310,16 +320,12 @@ export default defineComponent({
     };
 
     const remove = async (value: any) => {
-      ElMessageBox.confirm(
-          'Bạn có muốn xoá bản ghi này không?',
-          'Xóa',
-          {
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy',
-            customClass: 'my-custom-messagebox',
-          }
-      )
-          .then(async () => {
+      await showConfirmDialog(
+          t("message.common.delConfirm"),
+          t("message.common.delName", {name: popupTitleName.value }),
+          t("message.common.del"),
+          t("message.common.close"),
+          async () => {
             try {
               loading.value = true;
               await props.handleDelete(value)
@@ -328,15 +334,14 @@ export default defineComponent({
             } catch (error) {
               console.error(error);
             }
-          })
-          .catch((e) => {
-            console.error(e)
-          })
+          }
+      );
     };
 
     const handleAddNew = () => {
       popupMode.value = "add";
-      popupTitle.value = "Thêm mới thông tin";
+      console.log('popupTitleName.value', popupTitleName.value)
+      popupTitle.value = t('message.common.createInfo', {name: popupTitleName.value});
       selectedData.value = {};
       isPopupVisible.value = true;
     };
@@ -348,10 +353,12 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      popupTitleName.value = props.config.title;
       fetchTableData()
     });
 
     return {
+      t,
       filters,
       rules,
       data,
@@ -367,6 +374,7 @@ export default defineComponent({
       isPopupVisible,
       popupMode,
       popupTitle,
+      popupTitleName,
       selectedData,
       handleAddNew,
       handleClose,

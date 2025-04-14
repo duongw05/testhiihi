@@ -14,7 +14,7 @@ import systemSetup from "@/router/modules/systemSetup";
 const FrontRoutes: Route[] = [
     ...Dashboard,
     ...PermissionManage,
-    ...Customer,
+    // ...Customer,
     // ...SalePolicy,
     // ...systemSetup,
     // ...Component,
@@ -23,7 +23,7 @@ const FrontRoutes: Route[] = [
     // ...SystemManage,
     // ...SystemMessage,
     // ...Settings,
-    ...Dynamic,
+    // ...Dynamic,
 ]
 
 export default FrontRoutes

@@ -13,7 +13,7 @@ const route: Route[] = [
             {
                 path: 'function-management',
                 name: 'function-management',
-                component: createNameComponent(() => import('@/views/main/permissionManagement/functionManage/function.vue')),
+                component: createNameComponent(() => import('@/views/main/permissionManagement/functionManage/FunctionManagement.vue')),
                 // @ts-ignore
                 activeRouter: true,
                 meta: {

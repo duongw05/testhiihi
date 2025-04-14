@@ -120,15 +120,15 @@
                       <div style="display: flex; justify-content: right; width: 100%; margin-right: 20px">
                         <el-col :xs="24" :md="6" :lg="8" class="form-item" style="margin-right:2%">
                           <el-form-item :size="'default'"
-                                        prop="quickSearch"
+                                        prop="quickSearchUser"
                                         style="display: inherit">
-                            <el-input v-model.lazy.trim="searchQuery.quickSearch"
+                            <el-input v-model.lazy.trim="searchQuery.quickSearchUser"
                                       :placeholder="$t('message.menu.groupManage.quickSearch')" clearable></el-input>
                           </el-form-item>
                         </el-col>
                         <el-button :icon="Plus" size="default"
                                    color="var(--system-primary-color)"
-                                   type="primary"
+                                   type="primary" :disabled="!groupId"
                                    @click.stop="openUserListDrawer">{{ $t('message.common.add') }}
                         </el-button>
                       </div>
@@ -303,7 +303,8 @@ export default defineComponent({
     });
     const searchQuery = reactive(
         {
-          quickSearch: null
+          quickSearch: null,
+          quickSearchUser: null
         }
     );
     const rules = {}

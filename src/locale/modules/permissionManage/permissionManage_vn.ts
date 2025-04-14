@@ -2,6 +2,11 @@ export const permissionManage = {
     permissionManage: 'Quản lý phân quyền',
     functionManage: {
         self: 'Quản lý chức năng',
+        functionCode: 'Mã chức năng',
+        functionName: 'Tên chức năng',
+        status: 'Trạng thái',
+        description: 'Mô tả',
+        functionInfo: 'chức năng',
     },
     userManage: {
         self: 'Quản lý người dùng',

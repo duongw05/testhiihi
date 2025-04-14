@@ -56,7 +56,7 @@ export function searchUserByGroupId(groupId: any, pagination: Pagination) {
 
 export function searchUserNotInGroup(data: object) {
     return request({
-        url: prefix + `groups/`+ data?.groupId +'/search-users-not-in-group',
+        url: prefix + `groups/search-users-not-in-group`,
         method: 'post',
         data
     })
