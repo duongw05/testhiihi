@@ -9,6 +9,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -64,7 +65,7 @@ public class UserController {
         return responseFactory.success(userService.update(cmd));
     }
 
-    @PostMapping("/add")
+    @PostMapping(value = "/add")
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest cmd) throws IOException {
         return responseFactory.success(userService.create(cmd));
     }

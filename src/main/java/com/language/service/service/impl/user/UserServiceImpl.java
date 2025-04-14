@@ -34,10 +34,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class UserServiceImpl extends AbstractService<User, Long> implements UserService {
@@ -51,6 +55,7 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
     private final PasswordEncoder passwordEncoder;
     private final StorageService storageService;
     private final UserMapper userMapper;
+    private static final String UPLOAD_DIR = "src/main/resources/uploads/";
 
     public UserServiceImpl(JpaRepository<User, Long> repo, UserRepo userRepo, GroupRepo groupRepo, UserGroupMapRepo userGroupMapRepo, GroupDTORepo groupDTORepo, PasswordEncoder passwordEncoder, StorageService storageService, UserMapper userMapper) {
         super(repo);
@@ -94,22 +99,13 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
             user.setPhone(authUserUpdate.getPhone());
             user.setEmail(authUserUpdate.getEmail());
             user.setFullName(authUserUpdate.getFullName());
+            user.setDob(authUserUpdate.getDob());
+            user.setGender(authUserUpdate.getGender());
+            user.setUsername(authUserUpdate.getUsername());
+            user.setPassword(authUserUpdate.getPassword());
             user.setEnabled(authUserUpdate.isEnabled());
-            List<UserGroupMap> userGroupMaps = userGroupMapRepo.findAllByUserAndStatusAndDeleted(cmd.getId(), Constants.STATUS.ACTIVE, Constants.DELETE.INACTIVE);
-            List<Long> groupIds = cmd.getGroupIds();
-            List<Long> groupIdsDB = new ArrayList<>();
-            for (UserGroupMap authUserGroupMap : userGroupMaps) {
-                authUserGroupMap.setStatus(groupIds.contains(authUserGroupMap.getGroupId()) ? Constants.STATUS.ACTIVE : Constants.STATUS.INACTIVE);
-                authUserGroupMap.setDeleted(groupIds.contains(authUserGroupMap.getGroupId()) ? Constants.DELETE.INACTIVE : Constants.DELETE.ACTIVE);
-                groupIdsDB.add(authUserGroupMap.getGroupId());
-            }
-            List<Long> groupIdsNotInDB = new ArrayList<>(groupIds);
-            groupIdsNotInDB.removeAll(groupIdsDB);
-            if (!groupIdsNotInDB.isEmpty()) {
-                List<UserGroupMap> userGroups = getUserGroupMaps(groupIdsNotInDB, user);
-                userGroupMaps.addAll(userGroups);
-            }
-//            user.setUserGroupMaps(userGroupMaps);
+
+            userRepo.save(user);
             return new BaseResponseDTO("success", 200);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -126,15 +122,18 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
             if (!username.isEmpty()) {
                 throw new BusinessException(ConstantsErrorCode.USER.ERROR_USER_EXIST);
             }
-            authUser.setInvestigationCode(cmd.getInvestigationCode());
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String hashedPassword = passwordEncoder.encode(cmd.getPassword());
             authUser.setPassword(hashedPassword);
             authUser.setDeleted(Constants.DELETE.INACTIVE);
-//
+
 //            if (cmd.getAvatar() != null && !cmd.getAvatar().isEmpty()) {
-//                String avatarPath = saveAvatarFile(cmd.getAvatar());
-//                authUser.setAvatar(avatarPath);
+//                Files.createDirectories(Paths.get(UPLOAD_DIR));
+//                String fileName = UUID.randomUUID() + "_" + cmd.getAvatar().getOriginalFilename();
+//                Path filePath = Paths.get(UPLOAD_DIR, fileName);
+//                Files.write(filePath, cmd.getAvatar().getBytes());
+//                String avatarUrl = UPLOAD_DIR + fileName;
+//                authUser.setAvatar(avatarUrl);
 //            }
 
             userRepo.save(authUser);

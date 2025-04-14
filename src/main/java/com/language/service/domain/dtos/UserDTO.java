@@ -39,11 +39,6 @@ public class UserDTO {
 
     private Boolean enabled;
 
-    private String groups;
-    private String investigationName;
-    private String investigationCode;
-    private String investigationType;
-    private Long investigationId;
     private String stt;
 
     public String getDobStr() {

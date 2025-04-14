@@ -115,7 +115,4 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "ENABLED")
     private boolean enabled;
 
-    @Column(name = "investigation_code")
-    private String investigationCode;
-
 }

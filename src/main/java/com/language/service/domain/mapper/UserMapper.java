@@ -30,6 +30,7 @@ public interface UserMapper {
 
     User update(UpdateUserRequest cmd);
 
+    @Mapping(target = "avatar", ignore = true)
     User create(CreateUserRequest command);
 
 }
