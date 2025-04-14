@@ -22,42 +22,42 @@
       </el-form>
     </el-col>
 
-    <el-col :xs="24" :md="12" :lg="12" class="detail-form" style="margin-left: 3vh">
-      <el-form label-position="left" label-width="100px">
-        <el-form-item>
-          <b>{{ dataUser.email }}</b>
-        </el-form-item>
-        <el-form-item label="Tên">
-          <span>{{ dataUser.fullName }}</span>
-        </el-form-item>
-        <el-form-item label="Ngày sinh">
-          <span>{{ dataUser.dobStr }}</span>
-        </el-form-item>
-        <el-form-item label="Giới tính">
-          <span>{{ dataUser.genderStr }}</span>
-        </el-form-item>
-        <el-form-item label="Số điện thoại">
-          <span>{{ dataUser.phone }}</span>
-        </el-form-item>
-      </el-form>
-    </el-col>
-  </el-row>
+<!--    <el-col :xs="24" :md="12" :lg="12" class="detail-form" style="margin-left: 3vh">-->
+<!--      <el-form label-position="left" label-width="100px">-->
+<!--        <el-form-item>-->
+<!--          <b>{{ dataUser.email }}</b>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="Tên">-->
+<!--          <span>{{ dataUser.fullName }}</span>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="Ngày sinh">-->
+<!--          <span>{{ dataUser.dobStr }}</span>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="Giới tính">-->
+<!--          <span>{{ dataUser.genderStr }}</span>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="Số điện thoại">-->
+<!--          <span>{{ dataUser.phone }}</span>-->
+<!--        </el-form-item>-->
+<!--      </el-form>-->
+<!--    </el-col>-->
+<!--  </el-row>-->
 
-  <el-row :gutter="24" style="margin: 2vh">
-    <el-col :xs="24" :md="12" :lg="8" class="detail-form">
-      <el-form label-position="left" label-width="100px">
-        <el-form-item>
-          <b>{{ dataUser.email }}</b>
-        </el-form-item>
-        <el-form-item label="Tên">
-          <span>{{ dataUser.fullName }}</span>
-        </el-form-item>
-        <el-form-item label="Ngày sinh">
-          <span>{{ dataUser.dobStr }}</span>
-        </el-form-item>
-      </el-form>
-    </el-col>
-  </el-row>
+<!--  <el-row :gutter="24" style="margin: 2vh">-->
+<!--    <el-col :xs="24" :md="12" :lg="8" class="detail-form">-->
+<!--      <el-form label-position="left" label-width="100px">-->
+<!--        <el-form-item>-->
+<!--          <b>{{ dataUser.email }}</b>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="Tên">-->
+<!--          <span>{{ dataUser.fullName }}</span>-->
+<!--        </el-form-item>-->
+<!--        <el-form-item label="Ngày sinh">-->
+<!--          <span>{{ dataUser.dobStr }}</span>-->
+<!--        </el-form-item>-->
+<!--      </el-form>-->
+<!--    </el-col>-->
+<!--  </el-row>-->
 
 </template>
 
