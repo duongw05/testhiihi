@@ -38,7 +38,6 @@ public class UserDetailsDTORepoImpl extends AbstractDetailsRepo<UserDetailsDTO, 
                 root.join(User_.LAST_MODIFIED_BY, JoinType.LEFT).get(User_.ID),
                 root.join(User_.LAST_MODIFIED_BY, JoinType.LEFT).get(User_.FULL_NAME),
                 root.get(User_.LAST_MODIFIED_DATE),
-                root.join(User_.AVATAR, JoinType.LEFT).get(UploadedFile_.STORED_NAME)
         };
     }
 }
