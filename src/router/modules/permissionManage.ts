@@ -8,7 +8,7 @@ const route: Route[] = [
         path: '/permission-management',
         component: Layout,
         redirect: '/permission-management',
-        meta: {title: 'message.menu.permissionManage', icon: 'iconfont icon-shoplight'},
+        meta: {title: 'message.menu.permissionManage', icon: 'iconfont icon-group_light'},
         children: [
             {
                 path: 'function-management',
@@ -48,7 +48,7 @@ const route: Route[] = [
             {
                 path: 'group-management',
                 name: 'group-management',
-                component: createNameComponent(() => import('@/views/main/permissionManagement/groupManage/group.vue')),
+                component: createNameComponent(() => import('@/views/main/permissionManagement/groupManage/GroupManagement.vue')),
                 // @ts-ignore
                 activeRouter: true,
                 meta: {

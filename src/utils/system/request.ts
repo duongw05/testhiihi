@@ -49,14 +49,14 @@ service.interceptors.response.use(
 function showError(error: any) {
     console.log("error", error)
     if (([401].includes(error.message.status))) {
-        store.dispatch('user/loginOut')
+        // store.dispatch('user/loginOut')
         ElNotification({
             title: 'Lỗi',
             message: error.message?.data?.detailMessage || error.message?.data?.message || error.message.message || error.message?.data?.data?.message,
             type: 'error',
             duration: 3 * 1000
         })
-        window.location.href = appLogin
+        // window.location.href = appLogin
     } else {
         ElNotification({
             title: 'Lỗi',

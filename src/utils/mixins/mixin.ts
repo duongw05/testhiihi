@@ -2,7 +2,9 @@ import Vue from 'vue'
 import moment from 'moment'
 import store from "@/store";
 import _ from 'lodash'
-import {appParams} from "@/constants/app-param";
+import {ElNotification} from "element-plus";
+import { ElMessageBox } from "element-plus";
+
 
 export const regexInput = (value: any, regex: string) => {
     if (value) {
@@ -107,3 +109,38 @@ export function genUuid() {
         (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
     );
 }
+export function handleSuccess(t: Function,message: string) {
+    ElNotification({
+        title: t('message.common.success') ,
+        message,
+        type: 'success',
+        duration: 3000
+    });
+}
+export function handleErr(t: Function, message: string) {
+    ElNotification({
+        title: t('message.common.err'),
+        message,
+        type: 'error',
+        duration: 3000
+    });
+}
+
+export const showConfirmDialog = async (
+    message: string,
+    title: string,
+    confirmButtonText: string,
+    cancelButtonText: string,
+    onConfirm: () => Promise<void>
+) => {
+    try {
+        await ElMessageBox.confirm(message, title, {
+            confirmButtonText,
+            cancelButtonText,
+            customClass: "my-custom-messagebox",
+        });
+        await onConfirm();
+    } catch (error) {
+        console.error(error);
+    }
+};

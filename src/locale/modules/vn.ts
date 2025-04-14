@@ -8,12 +8,16 @@ const lang = {
     message: {
         language: 'Tiếng Việt',
         common: {
+            delConfirm: 'Bạn có muốn xoá bản ghi này không',
+            success: 'Thành công',
+            err: 'Thất bại',
             advancedSearch: 'Tìm kiếm nâng cao',
             search: 'Tìm kiếm',
             searchTip: 'Vui lòng nhập từ khóa',
             add: 'Thêm mới',
             update: 'Cập nhật',
             del: 'Xóa',
+            delName: 'Xóa {name}',
             delBat: 'Xóa chọn',
             delTip: 'Bạn có chắc chắn xóa dữ liệu đã chọn không?',
             handle: 'xử lý',
@@ -25,7 +29,15 @@ const lang = {
             reEnter: 'Nhập lại',
             export: 'Xuất báo cáo',
             searchResult: 'Kết quả tìm kiếm',
-            chooseValue: 'Chọn giá trị'
+            chooseValue: 'Chọn giá trị',
+            close: 'Đóng',
+            authorize: 'Phân quyền',
+            createInfo: 'Thêm mới {name}',
+            editInfo: 'Sửa {name}',
+            viewInfo: 'Xem chi tiết {name}',
+            addSuccess:'Thêm mới {name} thành công',
+            updateSuccess: 'Cập nhật {name} thành công',
+            errServer: 'Lỗi hệ thống, vui lòng thử lại sau',
         },
         menu: {
             ...dashboard,

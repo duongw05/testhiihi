@@ -23,6 +23,20 @@ export const permissionManage = {
         other: 'Other'
     },
     groupManage: {
-        self: 'Manage group',
+        groupRole: 'role group',
+        userGroupRole: 'user in role group',
+        addSuccess:'Create success',
+        updateSuccess: 'Update success',
+        err: 'System error, please try again later',
+        self: 'Manage role group',
+        roleGroupList: 'Role group list',
+        userList: 'User list',
+        quickSearch: 'Quick search',
+        description: 'Description',
+        groupCode: 'Group code',
+        groupName: 'Group name',
+        createGroup: 'Create role group',
+        updateGroup: 'Update role group',
+        createUserToRole : 'Create user to role group',
     }
 }

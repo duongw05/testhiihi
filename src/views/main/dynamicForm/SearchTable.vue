@@ -103,8 +103,8 @@
                 <el-tooltip v-for="(action, index) in config.table.actions"
                             :content="action.label">
                   <el-button style="width: 15px; margin: 0" plain text
-                             :icon="action.type == 'edit' ? Edit :  action.type == 'view' ? Document : Delete"
-                             color="var(--system-primary-color)"
+                             :icon="action.type === 'edit' ? Edit :  action.type === 'view' ? Document : Delete"
+                             :type="action.buttonType"
                              @click="handleAction(action.type, row)"
                   ></el-button>
                 </el-tooltip>
@@ -130,7 +130,16 @@
       </div>
     </div>
   </div>
-  <dynamic-popup
+<!--  <dynamic-popup-->
+<!--      :visible="isPopupVisible"-->
+<!--      :config="config.popup"-->
+<!--      :title="popupTitle"-->
+<!--      :mode="popupMode"-->
+<!--      :initialData="selectedData"-->
+<!--      :onSave="handleSave"-->
+<!--      @close="handleClose"-->
+<!--  />-->
+  <dynamic-drawer
       :visible="isPopupVisible"
       :config="config.popup"
       :title="popupTitle"
@@ -146,10 +155,12 @@ import {defineComponent, onMounted, reactive, ref, watch} from "vue";
 import {ElMessageBox, ElNotification} from "element-plus";
 import {Delete, Document, Edit, Key, MoreFilled, Plus, RefreshRight} from "@element-plus/icons";
 import DynamicPopup from "@/views/main/dynamicForm/DynamicPopup.vue";
+import DynamicDrawer from "@/views/main/dynamicForm/DynamicDrawer.vue";
+import {useI18n} from "vue-i18n";
 
 export default defineComponent({
   name: "SearchTable1",
-  components: {MoreFilled, DynamicPopup},
+  components: {MoreFilled, DynamicPopup, DynamicDrawer},
   computed: {
     Delete() {
       return Delete
@@ -189,6 +200,7 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const {t} = useI18n();
     const filters = reactive({});
     const rules = reactive({});
     const activeNames = ref(['1'])
@@ -284,12 +296,12 @@ export default defineComponent({
     const handleAction = (type: string, row: any) => {
       if (type === "edit") {
         popupMode.value = "edit";
-        popupTitle.value = "Sửa thông tin";
+        popupTitle.value = t('message.common.UpdateInfo', { name: t('message.menu.groupManage.groupName') });
         selectedData.value = {...row};
         isPopupVisible.value = true;
       } else if (type === "view") {
         popupMode.value = "view";
-        popupTitle.value = "Xem chi tiết";
+        popupTitle.value = t('message.common.UpdateInfo');
         selectedData.value = {...row};
         isPopupVisible.value = true;
       } else if (type === "delete") {

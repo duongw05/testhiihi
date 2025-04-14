@@ -7,6 +7,7 @@ import store from "@/store";
 import {getPermissionCommon} from "@/router";
 import {ADMIN} from "@/constants/menuPermission";
 import Customer from "@/router/modules/salesManagement";
+import Dynamic from "@/router/modules/dynamic";
 import SalePolicy from "@/router/modules/salePolicy";
 import systemSetup from "@/router/modules/systemSetup";
 
@@ -22,7 +23,7 @@ const FrontRoutes: Route[] = [
     // ...SystemManage,
     // ...SystemMessage,
     // ...Settings,
-    // ...Dynamic,
+    ...Dynamic,
 ]
 
 export default FrontRoutes

@@ -23,6 +23,20 @@ export const permissionManage = {
         other: 'Khác'
     },
     groupManage: {
-        self: 'Quản lý nhóm',
+        groupRole: 'nhóm quyền',
+        userGroupRole: 'người dùng thuộc nhóm quyền',
+        addSuccess:'Thêm mới thành công',
+        updateSuccess: 'Cập nhật thành công',
+        err: 'Lỗi hệ thống vui lòng thử lại sau',
+        self: 'Quản lý nhóm quyền',
+        roleGroupList: 'Danh sách nhóm quyền',
+        userList: 'Danh sách người dùng thuộc nhóm quyền',
+        quickSearch: 'Tìm kiếm nhanh',
+        description: 'Mô tả',
+        groupCode: 'Mã nhóm',
+        groupName: 'Tên nhóm',
+        createGroup: 'Thêm mới nhóm vai trò',
+        updateGroup: 'Cập nhật nhóm vai trò',
+        createUserToRole : 'Thêm mới người dùng vào vai trò',
     }
 }

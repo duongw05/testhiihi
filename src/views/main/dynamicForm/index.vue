@@ -13,10 +13,12 @@
 <script lang="ts">
 import {defineComponent, reactive} from 'vue'
 import SearchTable from "@/views/main/dynamicForm/SearchTable.vue";
+import {useI18n} from "vue-i18n";
 
 export default defineComponent({
   components: {SearchTable},
   setup() {
+    const {t} = useI18n();
     const getValueSelectBox = (value: any) => {
       return [
         {"value": "active", "label": "Hoạt động"},
@@ -40,7 +42,7 @@ export default defineComponent({
             "placeholder": "Nhập Tên",
             "defaultValue": "test",
             "rules": [
-              {"required": true, "message": "Tên không được để trống", "trigger": "blur"}
+              {"required": true, "message": t('message.menu.groupManage.description'), "trigger": "blur"}
             ]
           },
           {

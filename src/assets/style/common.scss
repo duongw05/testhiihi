@@ -444,25 +444,6 @@ a {
 .my-custom-messagebox .el-button--small {
   min-width: 100px;
 }
-.my-custom-messagebox .el-button--small:hover {
-  background-color: white !important;
-  color: var(--system-primary-color);
-  border-color: var(--system-primary-color);
-}
-.my-custom-messagebox .el-button--primary {
-  color: white;
-  background-color: var(--system-primary-color);
-  border: var(--system-primary-color);
-  min-width: 100px;
-}
-
-.my-custom-messagebox .el-button--primary:hover {
-  color: white !important;
-  border-color: #b70d02 !important;
-  background-color: #b70d02 !important;
-  opacity: 80% !important;;
-  outline: 0 !important;;
-}
 
 .search-extend .el-button--danger:focus{
   border-color: white;

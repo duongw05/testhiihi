@@ -8,12 +8,16 @@ const lang = {
     message: {
         language: 'English',
         common: {
+            delConfirm: 'Do you want to delete this record?',
+            success: 'Success',
+            err: 'Error',
             advancedSearch: 'Advanced Search',
             search: 'Search',
             searchTip: 'Please input keyword',
             add: 'Create',
             update: 'Update',
             del: 'Delete',
+            delName: 'Delete {name}',
             delBat: 'Delete choose',
             delTip: 'Are you sure delete the selection data ?',
             handle: 'Handle',
@@ -25,7 +29,12 @@ const lang = {
             reEnter: 'Re-enter',
             export: 'Export report',
             searchResult: 'Search results',
-            chooseValue: 'Choose Value'
+            chooseValue: 'Choose Value',
+            close: 'Close',
+            authorize: 'Authorization',
+            addSuccess: 'Create {name} successfully',
+            updateSuccess: 'Update {name} successfully',
+            errServer: 'System error, please try again later',
         },
         menu: {
             ...dashboard,
