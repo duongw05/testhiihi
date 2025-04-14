@@ -1,6 +1,6 @@
 <template>
 
-  <el-row :gutter="24" style="margin: 2vh">
+  <el-row :gutter="24" style="margin: 2vh" justify="center">
     <el-col :xs="24" :md="12" :lg="8" class="detail-form">
       <el-avatar :size="100" :src="dataUser.avatar"></el-avatar>
       <el-form label-position="left" label-width="100px">
