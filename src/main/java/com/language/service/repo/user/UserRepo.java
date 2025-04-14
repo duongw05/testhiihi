@@ -40,11 +40,12 @@ public interface UserRepo extends JpaRepository<User, Long>, UserRepoCustom {
     @Query("from User u where u.deleted = :deleted")
     List<User> getAllUer(Integer deleted);
 
- @Query("SELECT u FROM User u " +
-       "JOIN UserGroupMap ugm ON u.id = ugm.userId " +
-       "JOIN Group g ON ugm.groupId = g.id " +
-       "WHERE g.id = :groupId " +
-       "AND u.deleted = :deleted " +
-       "AND g.deleted = :deleted")
-Page<User> findUsersByGroupId(Long groupId, int deleted, Pageable pageable);
+    @Query("SELECT u FROM User u " +
+            "JOIN UserGroupMap ugm ON u.id = ugm.userId " +
+            "JOIN Group g ON ugm.groupId = g.id " +
+            "WHERE g.id = :groupId " +
+            "AND u.deleted = :deleted " +
+            "AND g.deleted = :deleted")
+    Page<User> findUsersByGroupId(Long groupId, int deleted, Pageable pageable);
+
 }

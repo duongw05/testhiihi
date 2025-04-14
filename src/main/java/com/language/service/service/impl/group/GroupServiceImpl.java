@@ -1,7 +1,9 @@
 package com.language.service.service.impl.group;
 
 import com.language.service.domain.entities.User;
+import com.language.service.domain.entities.UserGroupMap;
 import com.language.service.domain.mapper.UserMapper;
+import com.language.service.repo.jpa.usergroupmap.UserGroupMapRepo;
 import com.language.service.repo.user.UserRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -54,20 +56,17 @@ public class GroupServiceImpl extends AbstractService<Group, Long> implements Gr
     private final GroupRepo groupRepo;
     private final UserRepo userRepo;
     private final MenuRepo menuRepo;
-    private final MessageSource messageSource;
+    private final UserGroupMapRepo userGroupMapRepository;
     private final AuthenticationUtils auth;
 
-    private final UserMapper userMapper;
-
     @Autowired
-    public GroupServiceImpl(GroupRepo groupRepo, UserRepo userRepo, MenuRepo menuRepo, MessageSource messageSource, AuthenticationUtils auth, UserMapper userMapper) {
+    public GroupServiceImpl(GroupRepo groupRepo, UserRepo userRepo, MenuRepo menuRepo, MessageSource messageSource, AuthenticationUtils auth, UserMapper userMapper, UserGroupMapRepo userGroupMapRepository) {
         super(groupRepo);
         this.groupRepo = groupRepo;
         this.userRepo = userRepo;
         this.menuRepo = menuRepo;
-        this.messageSource = messageSource;
         this.auth = auth;
-        this.userMapper = userMapper;
+        this.userGroupMapRepository = userGroupMapRepository;
     }
 
     @Override
@@ -309,6 +308,21 @@ public class GroupServiceImpl extends AbstractService<Group, Long> implements Gr
     }
 
     @Override
+    public List<UserDTO> findUsersNotInGroup(UserGroupMapDTO request) {
+        try {
+            if (DataUtils.isNullOrZero(request.getGroupId())) {
+                throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_ID_REQUIRED);
+            }
+            List<User> users = userRepo.findUsersNotInGroup(request.getGroupId(), DataUtils.makeLikeQuery(request.getQuickSearch()), Constants.DELETE.INACTIVE);
+
+            return Mappers.getMapper(UserMapper.class).toDto(users);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
     public Page<UserDTO> findUsersInGroup(Long groupId, Pageable pageable) {
         try {
             if (groupId == null || groupId <= 0) {
@@ -316,6 +330,49 @@ public class GroupServiceImpl extends AbstractService<Group, Long> implements Gr
             }
             Page<User> search = userRepo.findUsersByGroupId(groupId, Constants.DELETE.INACTIVE, pageable);
             return new PageImpl<>(Mappers.getMapper(UserMapper.class).toDto(search.getContent()), pageable, search.getTotalElements());
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public BaseResponseDTO saveUserGroupMaps(List<UserGroupMapManagementDTO> userGroupMaps) {
+        BaseResponseDTO response = new BaseResponseDTO();
+        try {
+            for (UserGroupMapManagementDTO userGroupMapDTO : userGroupMaps) {
+                UserGroupMap entity = new UserGroupMap();
+                entity.setUserId(userGroupMapDTO.getUserId());
+                entity.setGroupId(userGroupMapDTO.getGroupId());
+                entity.setDeleted(Constants.STATUS.ACTIVE);
+                entity.setDeleted(Constants.DELETE.INACTIVE);
+                userGroupMapRepository.save(entity);
+            }
+            response.setMessage("Thêm mới nhóm người dùng thành công!");
+            return response;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public BaseResponseDTO deleteUserFromGroup(Long userId, Long groupId) {
+        BaseResponseDTO response = new BaseResponseDTO();
+        try {
+            if (DataUtils.isNullOrZero(userId) || DataUtils.isNullOrZero(groupId)) {
+                throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.INVALID_INPUT);
+            }
+            Optional<UserGroupMap> userGroupMap = userGroupMapRepository.findByUserIdAndGroupId(userId, groupId, Constants.STATUS.ACTIVE, Constants.DELETE.INACTIVE);
+            if (userGroupMap.isPresent()) {
+                userGroupMapRepository.delete(userGroupMap.get());
+                response.setMessage("Xóa người dùng khỏi nhóm thành công!");
+            } else {
+                response.setMessage("Người dùng không tồn tại trong nhóm!");
+            }
+            return response;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw e;

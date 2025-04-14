@@ -1,6 +1,7 @@
 package com.language.service.repo.user;
 
 
+import com.language.service.domain.entities.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
@@ -74,4 +75,18 @@ public class UserRepoCustomImpl implements UserRepoCustom {
 
         }
     }
+@Override
+public List<User> findUsersNotInGroup(Long groupId, String quickSearch, int deleted) {
+    String queryStr = "SELECT u.* " +
+            "FROM tbl_user u " +
+            "WHERE u.id NOT IN (SELECT ugm.USER_ID FROM user_group_map ugm WHERE ugm.GROUP_ID = :groupId) " +
+            "AND u.deleted = :deleted " +
+            "AND ((u.username LIKE :quickSearch OR u.full_name LIKE :quickSearch) OR :quickSearch IS NULL) " +
+            "LIMIT 50";
+    Query query = em.createNativeQuery(queryStr, User.class);
+    query.setParameter("groupId", groupId);
+    query.setParameter("deleted", deleted);
+    query.setParameter("quickSearch", quickSearch);
+    return query.getResultList();
+}
 }

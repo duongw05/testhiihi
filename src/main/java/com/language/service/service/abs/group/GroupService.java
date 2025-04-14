@@ -1,18 +1,15 @@
 package com.language.service.service.abs.group;
 
 
-import com.language.service.domain.dtos.UserDTO;
+import com.language.service.domain.dtos.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import com.language.service.domain.dtos.GroupUserManagementDTO;
 import com.language.service.rest.dto.request.AddMenusToGroup;
 import com.language.service.rest.dto.request.AddPermissionsToGroup;
 import com.language.service.rest.dto.request.CreateGroupRequest;
 import com.language.service.rest.dto.request.UnlinkMenuRequest;
 import com.language.service.rest.dto.request.UnlinkPermissionsFromGroup;
 import com.language.service.rest.dto.request.UpdateGroupRequest;
-import com.language.service.domain.dtos.MenuDTO;
-import com.language.service.domain.dtos.PermissionDTO;
 import com.language.service.domain.entities.Group;
 import com.language.service.rest.dto.request.searchparams.GroupUserSearchParams;
 import com.language.service.rest.dto.response.BaseResponseDTO;
@@ -44,6 +41,7 @@ public interface GroupService extends BaseService<Group, Long> {
     void unlinkPermission(long groupId, UnlinkPermissionsFromGroup command);
 
     Page<GroupUserManagementDTO> searchByFilter(GroupUserSearchParams params, Pageable pageable);
+
     Page<GroupUserManagementDTO> quickSearchGroup(GroupUserSearchParams params, Pageable pageable);
 
     BaseResponseDTO saveGroupUser(GroupUserManagementDTO request);
@@ -53,5 +51,12 @@ public interface GroupService extends BaseService<Group, Long> {
     BaseResponseDTO deleteGroupUser(Long id);
 
     List<Group> findGroupByUserId(Long userId);
+
     Page<UserDTO> findUsersInGroup(Long groupId, Pageable pageable);
+
+    List<UserDTO> findUsersNotInGroup(UserGroupMapDTO request);
+
+    BaseResponseDTO saveUserGroupMaps(List<UserGroupMapManagementDTO> userGroupMaps);
+
+    BaseResponseDTO deleteUserFromGroup(Long userId, Long groupId);
 }

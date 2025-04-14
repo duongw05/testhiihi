@@ -18,4 +18,5 @@ public class UserGroupMapDTO {
    private Long groupId;
    private Integer status;
    private Integer deleted;
+   private String quickSearch;
 }

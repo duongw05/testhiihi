@@ -22,6 +22,7 @@ public class ConstantsErrorCode {
         public static final String GROUP_USER_NAME_NOT_NULL = "ERROR.GROUP_USER.NAME_NOT_NULL";
         public static final String GROUP_USER_NAME_MAX_LENGTH = "ERROR.GROUP_USER.NAME_MAX_LENGTH";
         public static final String GROUP_USER_DESCRIPTION_MAX_LENGTH = "ERROR.GROUP_USER.DESCRIPTION_MAX_LENGTH";
+        public static final String INVALID_INPUT = "ERROR.GROUP_USER.INVALID_INPUT";
     }
 
 

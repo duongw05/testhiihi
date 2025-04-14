@@ -158,11 +158,12 @@ public class GroupController {
     }
 
     @PostMapping(value = "/search-group")
-    public ResponseEntity<?> searchAllGroup(@RequestBody GroupUserSearchParams params, Pageable pageable) throws Exception{
+    public ResponseEntity<?> searchAllGroup(@RequestBody GroupUserSearchParams params, Pageable pageable) throws Exception {
         return responseFactory.success(groupService.searchByFilter(params, pageable));
     }
+
     @PostMapping(value = "/quick-search-group")
-    public ResponseEntity<?> quickSearchGroup(@RequestBody GroupUserSearchParams params, Pageable pageable) throws Exception{
+    public ResponseEntity<?> quickSearchGroup(@RequestBody GroupUserSearchParams params, Pageable pageable) throws Exception {
         return responseFactory.success(groupService.quickSearchGroup(params, pageable));
     }
 
@@ -174,19 +175,36 @@ public class GroupController {
 
     @PostMapping(value = "/update-group")
 //    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.GROUP_USER_MANAGEMENT).UPDATE_GROUP_USER)")
-    public ResponseEntity<?> update(@RequestBody @Valid GroupUserManagementDTO request)throws Exception {
+    public ResponseEntity<?> update(@RequestBody @Valid GroupUserManagementDTO request) throws Exception {
         return responseFactory.success(groupService.updateGroupUser(request));
     }
 
     @DeleteMapping(value = "/delete-group/{id}")
 //    @PreAuthorize("hasPermission(T(com.language.service.common.ConstPermission.GROUP_USER_MANAGEMENT).DELETE_GROUP_USER)")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id)throws Exception {
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) throws Exception {
         return responseFactory.success(groupService.deleteGroupUser(id));
     }
-   @PostMapping("/{groupId}/search-users")
-public ResponseEntity<?> searchUsersInGroup(@PathVariable("groupId") Long groupId, Pageable pageable) {
-    pageable = Utils.getDefaultSortPageable(pageable);
-    Page<UserDTO> usersPage = groupService.findUsersInGroup(groupId, pageable);
-    return responseFactory.success(usersPage);
-}
+
+    @PostMapping("/{groupId}/search-users")
+    public ResponseEntity<?> searchUsersInGroup(@PathVariable("groupId") Long groupId, Pageable pageable) {
+        pageable = Utils.getDefaultSortPageable(pageable);
+        Page<UserDTO> usersPage = groupService.findUsersInGroup(groupId, pageable);
+        return responseFactory.success(usersPage);
+    }
+
+    @PostMapping("/{groupId}/search-users-not-in-group")
+    public ResponseEntity<?> searchUsersNotInGroup(@RequestBody UserGroupMapDTO request) {
+        List<UserDTO> usersPage = groupService.findUsersNotInGroup(request);
+        return responseFactory.success(usersPage);
+    }
+    @PostMapping(value = "/add-user-group-maps")
+    public ResponseEntity<?> addUserGroupMaps(@RequestBody @Valid List<UserGroupMapManagementDTO> request) throws Exception {
+        return responseFactory.success(groupService.saveUserGroupMaps(request));
+    }
+    @DeleteMapping("/delete-user-from-group/{groupId}/{userId}")
+//    @DeleteMapping(value = "/delete-user-from-group/{userId}/{groupId}")
+    public ResponseEntity<?> deleteUserFromGroup(@PathVariable Long userId, @PathVariable Long groupId) throws Exception {
+        return responseFactory.success(groupService.deleteUserFromGroup(userId, groupId));
+    }
+
 }
