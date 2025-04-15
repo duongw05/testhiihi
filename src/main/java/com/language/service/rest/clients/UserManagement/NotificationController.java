@@ -26,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Validated
 public class NotificationController {
 
+
     private final NotificationService notificationService;
     private final NotificationSearchService notificationSearchService;
     private final NotificationDetailsService notificationDetailsService;

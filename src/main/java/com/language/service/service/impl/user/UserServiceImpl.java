@@ -23,6 +23,7 @@ import com.language.service.storage.StorageService;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,9 +32,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import com.jcraft.jsch.*;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +53,24 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
     private final PasswordEncoder passwordEncoder;
     private final StorageService storageService;
     private final UserMapper userMapper;
+
+    @Value("${sftp.server}")
+    private String sftpServer;
+
+    @Value("${sftp.username}")
+    private String sftpUsername;
+
+    @Value("${sftp.password}")
+    private String sftpPassword;
+
+    @Value("${sftp.port}")
+    private int sftpPort;
+
+    @Value("${sftp.file.url}")
+    private String fileUrl;
+
+    @Value("${sftp.publicBaseUrl}")
+    private String publicBaseUrl;
 
     public UserServiceImpl(JpaRepository<User, Long> repo, UserRepo userRepo, GroupRepo groupRepo, UserGroupMapRepo userGroupMapRepo, GroupDTORepo groupDTORepo, PasswordEncoder passwordEncoder, StorageService storageService, UserMapper userMapper) {
         super(repo);
@@ -87,29 +107,23 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public BaseResponseDTO update(UpdateUserRequest cmd) {
+    public BaseResponseDTO update(UpdateUserRequest cmd) throws IOException {
         try {
             User authUserUpdate = Mappers.getMapper(UserMapper.class).update(cmd);
             User user = userRepo.findById(cmd.getId()).orElseThrow(() -> new BusinessException(ConstantsErrorCode.USER.ERROR_USER_NOT_FOUND));
             user.setPhone(authUserUpdate.getPhone());
             user.setEmail(authUserUpdate.getEmail());
             user.setFullName(authUserUpdate.getFullName());
+            user.setDob(authUserUpdate.getDob());
+            user.setGender(authUserUpdate.getGender());
+            user.setUsername(authUserUpdate.getUsername());
             user.setEnabled(authUserUpdate.isEnabled());
-            List<UserGroupMap> userGroupMaps = userGroupMapRepo.findAllByUserAndStatusAndDeleted(cmd.getId(), Constants.STATUS.ACTIVE, Constants.DELETE.INACTIVE);
-            List<Long> groupIds = cmd.getGroupIds();
-            List<Long> groupIdsDB = new ArrayList<>();
-            for (UserGroupMap authUserGroupMap : userGroupMaps) {
-                authUserGroupMap.setStatus(groupIds.contains(authUserGroupMap.getGroupId()) ? Constants.STATUS.ACTIVE : Constants.STATUS.INACTIVE);
-                authUserGroupMap.setDeleted(groupIds.contains(authUserGroupMap.getGroupId()) ? Constants.DELETE.INACTIVE : Constants.DELETE.ACTIVE);
-                groupIdsDB.add(authUserGroupMap.getGroupId());
+            if (cmd.getAvatar() != null && !cmd.getAvatar().isEmpty()) {
+                String avatarUrl = uploadToSFTP(cmd.getAvatar());
+                user.setAvatar(avatarUrl);
             }
-            List<Long> groupIdsNotInDB = new ArrayList<>(groupIds);
-            groupIdsNotInDB.removeAll(groupIdsDB);
-            if (!groupIdsNotInDB.isEmpty()) {
-                List<UserGroupMap> userGroups = getUserGroupMaps(groupIdsNotInDB, user);
-                userGroupMaps.addAll(userGroups);
-            }
-//            user.setUserGroupMaps(userGroupMaps);
+
+            userRepo.save(user);
             return new BaseResponseDTO("success", 200);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -126,16 +140,15 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
             if (!username.isEmpty()) {
                 throw new BusinessException(ConstantsErrorCode.USER.ERROR_USER_EXIST);
             }
-            authUser.setInvestigationCode(cmd.getInvestigationCode());
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String hashedPassword = passwordEncoder.encode(cmd.getPassword());
             authUser.setPassword(hashedPassword);
             authUser.setDeleted(Constants.DELETE.INACTIVE);
-//
-//            if (cmd.getAvatar() != null && !cmd.getAvatar().isEmpty()) {
-//                String avatarPath = saveAvatarFile(cmd.getAvatar());
-//                authUser.setAvatar(avatarPath);
-//            }
+
+            if (cmd.getAvatar() != null && !cmd.getAvatar().isEmpty()) {
+                String avatarUrl = uploadToSFTP(cmd.getAvatar());
+                authUser.setAvatar(avatarUrl);
+            }
 
             userRepo.save(authUser);
             return Mappers.getMapper(UserMapper.class).toDto(authUser);
@@ -145,15 +158,45 @@ public class UserServiceImpl extends AbstractService<User, Long> implements User
         }
     }
 
-    private String saveAvatarFile(MultipartFile file) throws IOException {
-        if (!"image/jpeg".equals(file.getContentType()) && !"image/png".equals(file.getContentType())) {
-            throw new BusinessException("Chỉ hỗ trợ file JPEG và PNG");
+    private String uploadToSFTP(MultipartFile file) throws IOException {
+        JSch jsch = new JSch();
+        Session session = null;
+        ChannelSftp channelSftp = null;
+        try {
+            logger.info("Connecting to SFTP server: {}:{}", sftpServer, sftpPort);
+            session = jsch.getSession(sftpUsername, sftpServer, sftpPort);
+            session.setPassword(sftpPassword);
+            session.setConfig("StrictHostKeyChecking", "no");
+            session.connect();
+            logger.info("SFTP session connected");
+
+            channelSftp = (ChannelSftp) session.openChannel("sftp");
+            channelSftp.connect();
+            logger.info("SFTP channel opened");
+
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            String remotePath = fileUrl + "/" + fileName;
+            logger.info("Uploading file to: {}", remotePath);
+
+            try (InputStream inputStream = file.getInputStream()) {
+                channelSftp.put(inputStream, remotePath);
+            }
+            logger.info("File uploaded successfully: {}", fileName);
+
+            logger.info("Generated avatar URL: {}", publicBaseUrl + "/" + fileName);
+            return publicBaseUrl + "/" + fileName;
+        } catch (JSchException | SftpException e) {
+            throw new IOException("Failed to upload to SFTP: " + e.getMessage(), e);
+        } finally {
+            if (channelSftp != null) {
+                channelSftp.disconnect();
+                logger.info("SFTP session disconnected");
+            }
+            if (session != null) {
+                session.disconnect();
+                logger.info("SFTP session disconnected");
+            }
         }
-        String uploadDir = "D:/VCRM";
-        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        File uploadFile = new File(uploadDir + "/" + fileName);
-        file.transferTo(uploadFile);
-        return fileName;
     }
 
     @Override

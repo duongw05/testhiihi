@@ -18,7 +18,7 @@ public interface UserService extends BaseService<User, Long> {
 
     Optional<User> findByPhone(String phone);
 
-    BaseResponseDTO update(UpdateUserRequest cmd);
+    BaseResponseDTO update(UpdateUserRequest cmd) throws IOException;
 
     UserDTO create(CreateUserRequest cmd) throws IOException;
 
