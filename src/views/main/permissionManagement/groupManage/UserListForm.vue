@@ -10,8 +10,8 @@
       <h2>{{ title }}</h2>
       <div style="text-align: right;">
         <div class="button-container">
-          <el-button @click="closeDialog()" size="default" type="primary" :icon="CircleCloseFilled"
-                     style="min-width: 100px" color="var(--system-primary-color)"> {{ $t('message.common.close') }}
+          <el-button @click="closeDialog()" size="default" :icon="CircleCloseFilled" style="min-width: 100px" plain>
+            {{ $t('message.common.close') }}
           </el-button>
           <el-button type="primary" style="min-width: 100px" :loading="loading"
                      size="default"

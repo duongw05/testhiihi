@@ -53,7 +53,11 @@ export default defineComponent({
             "type": "dateRange",
             "key": "name1",
             "label": t('message.menu.functionManage.functionName'),
-            "placeholder": t('message.common.placeholder', {name: t('message.menu.functionManage.functionName')}),
+            "rangeSeparator": t('message.common.date.to'),
+            "placeholderStart":  t('message.common.date.start'),
+            "placeholderEnd":t('message.common.date.end'),
+            "format": "YYYY-MM-DD",
+            "valueFormat": "YYYY-MM-DD",
             "defaultValue": "",
           },
         ]

@@ -7,6 +7,7 @@ export const permissionManage = {
         status: 'Trạng thái',
         description: 'Mô tả',
         functionInfo: 'chức năng',
+        selectStatus: 'Chọn trạng thái',
     },
     userManage: {
         self: 'Quản lý người dùng',

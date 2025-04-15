@@ -6,6 +6,7 @@ export const permissionManage = {
         functionName: 'Function name',
         description: 'Description',
         status: 'Status',
+        selectStatus: 'Select status',
         functionInfo: 'function',
     },
     userManage: {

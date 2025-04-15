@@ -68,7 +68,6 @@
                           :clearable="true"
                           :popper-append-to-body="true"
                           placement="bottom-start"
-                          @change="handleDateRangeChange(filter.key, $event)"
                       />
                     </template>
                   </el-form-item>
@@ -93,7 +92,9 @@
   <div class="box" style="margin-top: 12px">
     <div class="layout-container">
       <div class="button-container-table">
-        <h3 style="font-size: 14px; line-height: 16px">{{ t('message.common.searchResults')}} ({{ pagination.total }})</h3>
+        <h3 style="font-size: 14px; line-height: 16px">{{ t('message.common.searchResults') }} ({{
+            pagination.total
+          }})</h3>
         <div class="button-group">
           <el-button :icon="Plus" @click="handleAddNew"
                      color="var(--system-primary-color)" size="default" type="primary">{{ t('message.common.add') }}
@@ -112,6 +113,11 @@
             border
             :header-cell-style="{background:'#DDE1E6', color: 'rgba(0,0,0,0.8)'}"
         >
+          <el-table-column label="STT" header-align="center" align="center" width="100">
+            <template #default="{ $index }">
+              {{ (pagination.current - 1) * pagination.pageSize + $index + 1 }}
+            </template>
+          </el-table-column>
           <el-table-column
               v-for="(column, index) in config.table.columns"
               :key="index"
@@ -124,7 +130,8 @@
               :header-align="column.headerAlign || 'center'"
           >
           </el-table-column>
-          <el-table-column :label="t('message.common.actions')" header-align="center" align="center" width="110" min-width="110"
+          <el-table-column :label="t('message.common.actions')" header-align="center" align="center" width="110"
+                           min-width="110"
                            border
                            fixed="right">
             <template #default="{ row }">
@@ -272,44 +279,46 @@ export default defineComponent({
     watch(locale, () => {
       popupTitleName.value = props.config.title
     });
-    const handleDateRangeChange = async(value : any, event: any) => {
+    const handleDateRangeChange = async (value: any, event: any) => {
       console.log(value, event)
     }
 
+
     const fetchTableData = async () => {
       try {
-        if (loading.value) return
+        if (loading.value) return;
         loading.value = true;
         const response = await props.fetchData({
           filters,
           page: pagination.value.current,
           pageSize: pagination.value.pageSize,
         });
-        data.value = response.data;
-        pagination.value.total = response.totalElements;
-        pagination.value.current = response.pageable.pageNumber;
-        pagination.value.pageSize = response.pageable.pageSize
-
+        // Đảm bảo data.value là mảng
+        data.value = Array.isArray(response.data) ? response.data : [];
+        pagination.value.total = response.totalElements || 0;
+        pagination.value.current = response.pageable?.pageNumber || 1;
+        pagination.value.pageSize = response.pageable?.pageSize || 10;
       } catch (error) {
         ElNotification({
           title: 'Error',
-          message: error.response.data.errorCode,
+          message: error.response?.data?.errorCode || t('message.common.fetchDataError'),
           type: 'error',
-          duration: 3 * 1000
-        })
+          duration: 3 * 1000,
+        });
+        data.value = []; // Reset về mảng rỗng nếu lỗi
       } finally {
         loading.value = false;
       }
     };
 
     const onSubmit = () => {
-      filterForm.value.validate((valid: boolean) => {
+      filterForm.value?.validate((valid: boolean) => {
         if (valid) {
           fetchTableData();
         } else {
           ElNotification({
             title: 'Error',
-            message: 'Vui lòng kiểm tra lại các điều kiện tìm kiếm!',
+            message: t('message.common.checkSearchConditions'),
             type: 'error',
             duration: 3 * 1000
           })
@@ -335,12 +344,12 @@ export default defineComponent({
     const handleAction = (type: string, row: any) => {
       if (type === "edit") {
         popupMode.value = "edit";
-        popupTitle.value = t('message.common.updateInfo', {name:  popupTitleName.value});
+        popupTitle.value = t('message.common.updateInfo', {name: popupTitleName.value});
         selectedData.value = {...row};
         isPopupVisible.value = true;
       } else if (type === "view") {
         popupMode.value = "view";
-        popupTitle.value = t('message.common.viewInfo', {name:  popupTitleName.value});
+        popupTitle.value = t('message.common.viewInfo', {name: popupTitleName.value});
         selectedData.value = {...row};
         isPopupVisible.value = true;
       } else if (type === "delete") {
@@ -351,7 +360,7 @@ export default defineComponent({
     const remove = async (value: any) => {
       await showConfirmDialog(
           t("message.common.delConfirm"),
-          t("message.common.delName", {name: popupTitleName.value }),
+          t("message.common.delName", {name: popupTitleName.value}),
           t("message.common.del"),
           t("message.common.close"),
           async () => {
@@ -376,7 +385,7 @@ export default defineComponent({
     };
 
     const handleClose = () => {
-      selectedData.value = null;
+      selectedData.value = {};
       isPopupVisible.value = false;
       fetchTableData()
     };

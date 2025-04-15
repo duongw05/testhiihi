@@ -44,10 +44,17 @@ const lang = {
             placeholder: 'Nhập {name}',
             searchResults: 'Kết quả tìm kiếm',
             actions: 'Hành động',
+            checkSearchConditions: 'Vui lòng kiểm tra điều kiện tìm kiếm',
+            fetchDataError: "Lỗi khi lấy dữ liệu",
             status: {
                 active: 'Hiệu lực',
                 inactive: 'Hết hiệu lực',
-            }
+            },
+            date: {
+                start: 'Ngày bắt đầu',
+                end: 'Ngày kết thúc',
+                to: 'Đến',
+            },
         },
         menu: {
             ...dashboard,

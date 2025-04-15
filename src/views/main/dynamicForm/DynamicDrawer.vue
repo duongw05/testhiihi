@@ -7,9 +7,10 @@
   >
     <template #header>
       <h2 class="title-dialog">{{ title }}</h2>
-      <el-button @click="onClose" style="width: 100px" size="default" plain>{{ $t('message.common.close') }}</el-button>
-      <el-button type="primary" v-if="!isViewMode" color="var(--system-primary-color)" @click="onSubmit" style="width: 100px" size="default">
-        {{formData['id'] ? $t('message.common.update')  : $t('message.common.add')}}
+      <el-button @click="onClose" style="width: 100px" size="default" :icon="CircleCloseFilled"  plain>{{ $t('message.common.close') }}</el-button>
+      <el-button type="primary" v-if="!isViewMode" color="var(--system-primary-color)" @click="onSubmit"
+                 :icon="CirclePlus" style="width: 100px" size="default">
+        {{ formData['id'] ? $t('message.common.update') : $t('message.common.add') }}
       </el-button>
     </template>
     <el-form
@@ -58,6 +59,30 @@
                     :rows="field.rows || 4"
                 />
               </template>
+              <template v-else-if="field.type  === 'date'">
+                <el-date-picker
+                    v-model="formData[field.key]"
+                    type="date"
+                    :placeholder="field.placeholder"
+                    :format="field.format"
+                    :value-format="field.valueFormat"
+                    :clearable="true"
+                    popper-class="custom-date-picker-popper"
+                />
+              </template>
+              <template v-else-if="field.type  === 'dateRange'">
+                <el-date-picker
+                    v-model="formData[field.key]"
+                    type="daterange"
+                    :range-separator="field.rangeSeparator"
+                    :start-placeholder="field.placeholderStart"
+                    :end-placeholder="field.placeholderEnd"
+                    :format="field.format"
+                    :value-format="field.valueFormat"
+                    :clearable="true"
+                    placement="bottom-start"
+                />
+              </template>
             </el-form-item>
           </el-col>
         </template>
@@ -67,8 +92,10 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, ref, watch} from "vue";
-
+import {defineComponent, reactive, ref, watch, nextTick} from "vue";
+import {FormInstance} from "element-plus"; // Import FormInstance từ element-plus
+import {CircleCloseFilled, CirclePlus} from '@element-plus/icons-vue';
+import {useI18n} from "vue-i18n";
 export default defineComponent({
   name: "DynamicPopup",
   props: {
@@ -98,48 +125,59 @@ export default defineComponent({
     },
   },
   setup(props, {emit}) {
+    const {t} = useI18n();
     const visibleShow = ref(props.visible);
-    const formData = reactive({});
-    const formRules = reactive({});
-    const popupForm = ref(null);
+    const formData = reactive<Record<string, any>>({});
+    const formRules = reactive<Record<string, any[]>>({});
+    const popupForm = ref<FormInstance | null>(null);
     const actionForm = ref(props.mode);
-
     const isViewMode = ref(false);
+
     const resetForm = () => {
       Object.keys(formData).forEach((key) => {
         formData[key] = "";
       });
     };
+
     watch(() => props.visible, (newVal) => {
       visibleShow.value = newVal;
       isViewMode.value = props.mode === "view";
-      resetForm();
       props.config.fields.forEach((field: any) => {
         if (field.rules) {
           formRules[field.key] = field.rules;
         }
-        if ("add" === props.mode) {
-          formData[field.key] = field.defaultValue || "";
-        }
       });
-      if (props.mode !== "add") {
-        Object.assign(formData, props.initialData);
+      if (newVal) {
+        resetForm();
+        props.config.fields.forEach((field: any) => {
+          if (field.rules) {
+            formRules[field.key] = field.rules;
+          }
+          if (field.type === 'combobox' && field.defaultValue !== undefined) {
+            formData[field.key] = field.defaultValue;
+          }
+        });
+        if (props.mode !== "add") {
+          Object.assign(formData, props.initialData);
+        }
+        nextTick(() => {
+          popupForm.value?.clearValidate();
+        });
       }
     });
 
     const onClose = () => {
-      popupForm.value.clearValidate()
-      resetForm()
+      popupForm.value?.clearValidate();
       emit("close");
     };
 
     const onSubmit = () => {
-      popupForm.value.validate((valid: boolean) => {
+      popupForm.value?.validate((valid: boolean) => {
         if (valid) {
-          props.onSave(formData); // Gọi hàm onSave từ cha
+          props.onSave(formData); // Gọi hàm onSave từ component cha
           setTimeout(() => {
             onClose();
-          }, 100)
+          }, 100);
         }
       });
     };
@@ -152,7 +190,9 @@ export default defineComponent({
       onClose,
       onSubmit,
       visibleShow,
-      actionForm
+      actionForm,
+      CirclePlus,
+      CircleCloseFilled
     };
   },
 });
@@ -181,5 +221,4 @@ export default defineComponent({
   margin-top: 5px;
   text-align: left;
 }
-
 </style>

@@ -2,7 +2,7 @@
   <div class="box ">
     <SearchTable
         :config="config"
-        :fetchData="fetchData"
+        :fetchData="fetchDataFunctionCatalog"
         :handle-save="handleSaveOrUpdate"
         :handleDelete="handleDelete"
     />
@@ -11,18 +11,39 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, computed} from 'vue'
+import {defineComponent, computed, ref, reactive} from 'vue'
 import SearchTable from "@/views/main/dynamicForm/SearchTable.vue";
 import {useI18n} from "vue-i18n";
+import {
+  addFunctionCatalog,
+  deleteFunctionCatalog,
+  searchFunctionCatalog,
+  updateFunctionCatalog
+} from "@/api/roleManage/funtionCatalog";
+import {handleErr, handleSuccess, showConfirmDialog} from '@/utils/mixins/mixin';
 
 export default defineComponent({
   components: {SearchTable},
   setup() {
     const {t} = useI18n();
+    const loading = ref(false)
+    const pagination = reactive({
+      current: 1,
+      total: 0,
+      pageSize: 10,
+      size: 10,
+    });
+    const filterQuery = reactive(
+        {
+          status: null,
+          functionCode: '',
+          functionName: ''
+        }
+    );
     const getValueSelectBox = (value: any) => {
       return [
-        {"value": "1", "label": t('message.common.status.active')},
-        {"value": "0", "label": t('message.common.status.inactive')},
+        {"value": 1, "label": t('message.common.status.active')},
+        {"value": 0, "label": t('message.common.status.inactive')},
       ];
     }
     let config = computed(() => ({
@@ -31,24 +52,30 @@ export default defineComponent({
         "fields": [
           {
             "type": "text",
-            "key": "code",
+            "key": "functionCode",
             "label": t('message.menu.functionManage.functionCode'),
             "placeholder": t('message.common.placeholder', {name: t('message.menu.functionManage.functionCode')}),
             "defaultValue": "",
           },
           {
             "type": "text",
-            "key": "name",
+            "key": "functionName",
             "label": t('message.menu.functionManage.functionName'),
             "placeholder": t('message.common.placeholder', {name: t('message.menu.functionManage.functionName')}),
             "defaultValue": "",
+          },
+          {
+            "type": "combobox",
+            "key": "status",
+            "label": t('message.menu.functionManage.status'),
+            "placeholder": t('message.menu.functionManage.selectStatus'),
+            "defaultValue": 1,
+            "options": getValueSelectBox(1)
           },
         ]
       },
       "table": {
         "columns": [
-          {"key": "stt", "label": "STT", "width": "100px", "align": 'center'},
-          // {"key": "id", "label": "ID", "width": "200px", "align": 'left'},
           {"key": "functionCode", "label": t('message.menu.functionManage.functionCode'), "align": 'right'},
           {"key": "functionName", "label": t('message.menu.functionManage.functionName'), "align": 'right'},
           {"key": "description", "label": t('message.menu.functionManage.description'), "align": 'right'},
@@ -66,7 +93,6 @@ export default defineComponent({
         ]
       },
       "popup": {
-
         "fields": [
           {
             "type": "text",
@@ -107,6 +133,14 @@ export default defineComponent({
             ],
           },
           {
+            "type": "combobox",
+            "key": "status",
+            "label": t('message.menu.functionManage.status'),
+            "placeholder": t('message.menu.functionManage.selectStatus'),
+            "defaultValue": 1,
+            "options": getValueSelectBox(1)
+          },
+          {
             "type": "textArea",
             "key": "description",
             "label": t('message.menu.functionManage.description'),
@@ -124,43 +158,78 @@ export default defineComponent({
       }
     }));
 
-    const fetchData = async ({filters, page, pageSize}: any) => {
-      console.log("filter", filters)
-      // Dữ liệu cố định
-      const mockResponse = {
-        totalElements: 50,
-        pageable: {
-          pageNumber: page,
-          pageSize,
-          totalPages: Math.ceil(50 / pageSize),
-        },
-        content: Array.from({length: pageSize}, (_, index) => ({
-          stt: (page - 1) * pageSize + index + 1,
-          id: (page - 1) * pageSize + index + 1,
-          functionCode: `Tên người dùng ${(page - 1) * pageSize + index + 1}`,
-          functionName: `Mã người dùng ${(page - 1) * pageSize + index + 1}`,
-          description: `Mô tả ${(page - 1) * pageSize + index + 1}`,
-          status: (index % 2 === 0 ? 1 : 0),
-        })),
-      };
-
-      // Trả về dữ liệu giả lập
-      return {
-        data: mockResponse.content,
-        totalElements: mockResponse.totalElements,
-        pageable: mockResponse.pageable,
-      };
+    const fetchDataFunctionCatalog = async ({filters, page, pageSize}: any) => {
+      try {
+        loading.value = true;
+        const {data} = await searchFunctionCatalog(filters, {current: page - 1, pageSize});
+        const content = Array.isArray(data.data.content) ? data.data.content : [];
+        Object.assign(filterQuery, filters);
+        pagination.current = page;
+        pagination.pageSize = pageSize;
+        return {
+          data: content,
+          totalElements: data.data.totalElements || 0,
+          pageable: {
+            pageNumber: (data.data.pageable?.pageNumber || 0) + 1,
+            pageSize: data.data.pageable?.pageSize || pageSize,
+            totalPages: Math.ceil((data.data.totalElements || 0) / (data.data.pageable?.pageSize || pageSize)),
+          },
+        };
+      } catch (error) {
+        return {
+          data: [],
+          totalElements: 0,
+          pageable: {
+            pageNumber: 1,
+            pageSize: pageSize || 10,
+            totalPages: 0,
+          },
+        };
+      } finally {
+        loading.value = false;
+      }
     };
-    const handleSaveOrUpdate = (value: any) => {
-      console.log("value", value);
+    const handleSaveOrUpdate = async (value: any) => {
+      try {
+        loading.value = true
+        if (value.id) {
+          await updateFunctionCatalog(value)
+          handleSuccess(t, t('message.common.updateSuccess', {name: t('message.menu.functionManage.functionInfo')}));
+        } else {
+          await addFunctionCatalog(value)
+          handleSuccess(t, t('message.common.addSuccess', {name: t('message.menu.functionManage.functionInfo')}));
+        }
+        await fetchDataFunctionCatalog({
+          filters: {
+            ...filterQuery,
+            status: filterQuery.status === null ? 1 : filterQuery.status
+          },
+          page: pagination.current,
+          pageSize: pagination.pageSize
+        })
+        loading.value = false
+      } catch (e) {
+        console.log(e)
+        handleErr(t, t('message.common.errServer'));
+        loading.value = false
+      }
     }
-    const handleDelete = (value: any) => {
-      console.log("value", value);
+
+    const handleDelete = async (value: any) => {
+      try {
+        loading.value = true;
+        await deleteFunctionCatalog(value.id);
+        loading.value = false;
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     return {
+      filterQuery,
+      pagination,
       config,
-      fetchData,
+      fetchDataFunctionCatalog,
       handleSaveOrUpdate,
       handleDelete,
     }

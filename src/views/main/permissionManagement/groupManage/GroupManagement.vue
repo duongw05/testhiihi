@@ -122,7 +122,7 @@
                           <el-form-item :size="'default'"
                                         prop="quickSearchUser"
                                         style="display: inherit">
-                            <el-input v-model.lazy.trim="searchQuery.quickSearchUser"
+                            <el-input v-model.lazy.trim="searchQuery.quickSearchUser" @input="getUserInGroup"
                                       :placeholder="$t('message.menu.groupManage.quickSearch')" clearable></el-input>
                           </el-form-item>
                         </el-col>
@@ -228,7 +228,7 @@ import RoleGroupListForm from "@/views/main/permissionManagement/groupManage/Rol
 import UserListForm from "@/views/main/permissionManagement/groupManage/UserListForm.vue";
 import {useI18n} from 'vue-i18n';
 import {useRouter} from "vue-router";
-import {deleteGroup, quickSearchGroup, searchUserByGroupId,deleteGroupUser} from "@/api/roleManage/groupUser";
+import {deleteGroup, quickSearchGroup, searchUserInGroup, deleteGroupUser} from "@/api/roleManage/groupUser";
 import {ElMessageBox} from "element-plus";
 
 export default defineComponent({
@@ -424,7 +424,11 @@ export default defineComponent({
         loading.value = true;
         paginationUser.current = Math.max(paginationUser.current, 1); // Đảm bảo currentPage không dưới 1
         paginationUser.current--;
-        const {data} = await searchUserByGroupId(groupId.value, paginationUser);
+        const param = {
+          groupId: groupId.value,
+          quickSearch: searchQuery.quickSearchUser
+        }
+        const {data} = await searchUserInGroup(param, paginationUser);
         tableDataUser.value = data.data.content;
         paginationUser.total = data.data.totalElements;
         paginationUser.current = data.data.pageable.pageNumber + 1;

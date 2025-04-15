@@ -47,10 +47,11 @@ export function quickSearchGroup(data: object, pagination: Pagination) {
         data
     })
 }
-export function searchUserByGroupId(groupId: any, pagination: Pagination) {
+export function searchUserInGroup(data: object, pagination: Pagination) {
     return request({
-        url: prefix + `groups/`+ groupId +'/search-users',
-        method: 'post'
+        url: prefix + `groups/search-users`,
+        method: 'post',
+        data
     })
 }
 

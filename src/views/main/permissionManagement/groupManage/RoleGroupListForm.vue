@@ -10,8 +10,8 @@
       <h2>{{ title }}</h2>
       <div style="text-align: right;">
         <div class="button-container">
-          <el-button @click="closeDialog(formRef)" size="default" type="primary" :icon="CircleCloseFilled"
-                     style="min-width: 100px" color="var(--system-primary-color)"> {{ $t('message.common.close') }}
+          <el-button @click="closeDialog(formRef)" :icon="CircleCloseFilled" size="default" style="min-width: 100px"
+                     plain> {{ $t('message.common.close') }}
           </el-button>
           <el-button type="primary" style="min-width: 100px" :loading="loading"
                      size="default"
@@ -152,16 +152,15 @@ export default defineComponent({
     })
 
     const onSubmit = async (formEl: FormInstance | undefined) => {
-      console.log(formData)
       if (!formEl) return
       await formEl.validate(async (valid) => {
         if (valid) {
           try {
             loading.value = true
-            if(formData.id){
+            if (formData.id) {
               await updateGroup(formData)
               handleSuccess(t, t('message.common.updateSuccess', {name: t('message.menu.groupManage.groupRole')}));
-            }else {
+            } else {
               await addGroup(formData)
               handleSuccess(t, t('message.common.addSuccess', {name: t('message.menu.groupManage.groupRole')}));
             }

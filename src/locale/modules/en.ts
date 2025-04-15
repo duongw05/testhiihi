@@ -43,10 +43,17 @@ const lang = {
             placeholder: 'Input {name}',
             searchResults: 'Search results',
             actions: 'Actions',
+            checkSearchConditions: 'Please check the search conditions',
+            fetchDataError: 'Failed to fetch data',
             status: {
                 active: 'Active',
                 inactive: 'Inactive',
-            }
+            },
+            date: {
+                start: 'Start date',
+                end: 'End date',
+                to: 'To',
+            },
         },
         menu: {
             ...dashboard,
