@@ -103,8 +103,8 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "GENDER")
     private Integer gender;
 
-//    @Column(name = "AVATAR")
-//    private String avatar;
+    @Column(name = "AVATAR")
+    private String avatar;
 
     @Column(name = "LOCALE")
     private String locale;

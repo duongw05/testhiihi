@@ -31,7 +31,7 @@ public class UserDTO {
 
     private Integer gender;
 
-//    private String avatar;
+    private String avatar;
 
     private String locale;
 

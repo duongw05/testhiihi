@@ -26,7 +26,7 @@ public class FunctionCatalogController {
     }
 
     @PostMapping(value = "/search")   
-    public ResponseEntity<?> search(FunctionCatalogDTO request, @PageableDefault Pageable pageable) {
+    public ResponseEntity<?> search(@RequestBody FunctionCatalogDTO request, @PageableDefault Pageable pageable) {
        return responseFactory.success(functionCatalogService.search(request, pageable));
     }
     

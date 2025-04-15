@@ -13,6 +13,9 @@ import java.util.List;
 
 public interface FunctionCatalogRepo extends JpaRepository<FunctionCatalog, Long>, FunctionCatalogCustomRepo {
 
-    @Query("from FunctionCatalog f where f.functionCode like :functionCode and f.functionName like :functionName and f.status = :status and f.deleted = :deleted")
+    @Query("from FunctionCatalog f where (f.functionCode like :functionCode or :functionCode is null) " +
+            "and (f.functionName like :functionName or :functionName is null) " +
+            "and f.status = :status " +
+            "and f.deleted = :deleted order by f.id desc")
     Page<FunctionCatalog> findByFunctionCodeAndFunctionName(String functionCode, String functionName, Integer status, Integer deleted, Pageable p);
 }
