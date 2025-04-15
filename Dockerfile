@@ -16,7 +16,7 @@ VOLUME /app
 COPY target/*.jar app.jar
 
 # Mở cổng 8448
-EXPOSE 8448
+EXPOSE 1061
 
 # Khởi chạy ứng dụng với profile 'prod'
 ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
