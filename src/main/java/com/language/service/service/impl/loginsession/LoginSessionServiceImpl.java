@@ -44,5 +44,6 @@ public class LoginSessionServiceImpl extends AbstractService<LoginSession, Long>
         loginSession.setUser(user);
         loginSession.setCreatedDate(new Date());
         loginSessionRepo.save(loginSession);
+
     }
 }

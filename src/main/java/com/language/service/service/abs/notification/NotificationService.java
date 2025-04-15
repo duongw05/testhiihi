@@ -14,4 +14,5 @@ public interface NotificationService extends BaseService<Notification, Long> {
      * @param notificationId
      */
     void deleteAndMarkSent(long notificationId);
+
 }

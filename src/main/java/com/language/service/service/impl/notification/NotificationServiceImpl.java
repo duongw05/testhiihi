@@ -15,6 +15,7 @@ import com.language.service.service.abs.notification.NotificationService;
 public class NotificationServiceImpl extends AbstractService<Notification, Long> implements NotificationService {
 
     private final NotificationRepo notificationRepo;
+
     private NotificationToSendRepo toSendRepo;
 
     @Autowired

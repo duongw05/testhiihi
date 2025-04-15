@@ -39,4 +39,5 @@ public class LoginSession extends BaseEntity implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
 
+
 }

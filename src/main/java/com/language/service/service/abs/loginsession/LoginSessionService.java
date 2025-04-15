@@ -8,4 +8,5 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface LoginSessionService extends BaseService<LoginSession, Long> {
     void storeLoginSessionInfo(HttpServletRequest request, String accessTokenId, String refreshTokenId, long userId);
+
 }

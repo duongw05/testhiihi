@@ -29,7 +29,7 @@ public class CreateUserRequest {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dob;
     private Integer gender;
-//    private MultipartFile avatar;
+    private MultipartFile avatar;
     private boolean enabled;
 
 }

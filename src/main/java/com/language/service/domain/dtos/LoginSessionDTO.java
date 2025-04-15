@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class LoginSessionDTO {
     private long id;
 
+
     private Long userId;
 
     private String userFullName;

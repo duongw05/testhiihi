@@ -28,6 +28,7 @@ public interface UserMapper {
 
     List<UserDTO> toDto(List<User> user);
 
+    @Mapping(target = "avatar", ignore = true)
     User update(UpdateUserRequest cmd);
 
     @Mapping(target = "avatar", ignore = true)
