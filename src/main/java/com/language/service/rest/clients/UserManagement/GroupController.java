@@ -185,14 +185,14 @@ public class GroupController {
         return responseFactory.success(groupService.deleteGroupUser(id));
     }
 
-    @PostMapping("/{groupId}/search-users")
-    public ResponseEntity<?> searchUsersInGroup(@PathVariable("groupId") Long groupId, Pageable pageable) {
+    @PostMapping("/search-users")
+    public ResponseEntity<?> searchUsersInGroup(@RequestBody UserGroupMapDTO request, Pageable pageable) {
         pageable = Utils.getDefaultSortPageable(pageable);
-        Page<UserDTO> usersPage = groupService.findUsersInGroup(groupId, pageable);
+        Page<UserDTO> usersPage = groupService.findUsersInGroup(request, pageable);
         return responseFactory.success(usersPage);
     }
 
-    @PostMapping("/{groupId}/search-users-not-in-group")
+    @PostMapping("/search-users-not-in-group")
     public ResponseEntity<?> searchUsersNotInGroup(@RequestBody UserGroupMapDTO request) {
         List<UserDTO> usersPage = groupService.findUsersNotInGroup(request);
         return responseFactory.success(usersPage);

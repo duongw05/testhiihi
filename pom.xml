@@ -292,6 +292,7 @@
         </repository>
     </repositories>
     <build>
+        <finalName>languageLinkService</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

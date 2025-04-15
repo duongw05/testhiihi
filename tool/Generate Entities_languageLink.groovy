@@ -273,8 +273,8 @@ def generateServiceImpl(out, className, fields, tableName) {
             "import org.springframework.data.domain.PageImpl;\n" +
             "import org.springframework.stereotype.Service;\n" +
             "import org.springframework.transaction.annotation.Transactional;\n" +
-            "import vn.nodo.c09.tangthu.exception.BusinessException;\n" +
-            "import vn.nodo.c09.tangthu.common.Constants;\n" +
+            "import com.language.service.exception.BusinessException;\n" +
+            "import com.language.service.common.Constants;\n" +
             "\n" +
             "@Service\n" +
             "public class ${className}ServiceImpl implements ${className}Service {\n" +
@@ -359,13 +359,13 @@ def generateController(out, className, fields, tableName) {
             "import org.springframework.data.domain.Pageable;\n" +
             "import org.springframework.data.web.PageableDefault;\n" +
             "import org.springframework.web.bind.annotation.*;\n" +
-            "import vn.nodo.c09.tangthu.common.Constants;\n" +
-            "import vn.nodo.c09.tangthu.common.ResponseFactory;\n" +
+            "import com.language.service.common.Constants;\n" +
+            "import com.language.service.common.ResponseFactory;\n" +
             "import org.springframework.http.ResponseEntity;\n" +
             "import jakarta.validation.Valid;\n" +
             "\n" +
             "@RestController\n" +
-            "@RequestMapping(Constants.CLIENT_API)\n" +
+            "@RequestMapping(Constants.CLIENT_API"+  "+ \"/${tableClassObject}" +"\""+ ")\n" +
             "public class ${className}Controller {\n" +
             "    private static final Logger logger = LoggerFactory.getLogger(${className}Controller.class);\n" +
             "\n" +

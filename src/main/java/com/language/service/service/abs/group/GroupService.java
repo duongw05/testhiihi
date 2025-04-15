@@ -52,7 +52,7 @@ public interface GroupService extends BaseService<Group, Long> {
 
     List<Group> findGroupByUserId(Long userId);
 
-    Page<UserDTO> findUsersInGroup(Long groupId, Pageable pageable);
+    Page<UserDTO> findUsersInGroup(UserGroupMapDTO request, Pageable pageable);
 
     List<UserDTO> findUsersNotInGroup(UserGroupMapDTO request);
 

@@ -44,8 +44,9 @@ public interface UserRepo extends JpaRepository<User, Long>, UserRepoCustom {
             "JOIN UserGroupMap ugm ON u.id = ugm.userId " +
             "JOIN Group g ON ugm.groupId = g.id " +
             "WHERE g.id = :groupId " +
+            "AND (u.fullName like :quickSearch or u.username like :quickSearch or :quickSearch is null)" +
             "AND u.deleted = :deleted " +
             "AND g.deleted = :deleted")
-    Page<User> findUsersByGroupId(Long groupId, int deleted, Pageable pageable);
+    Page<User> findUsersByGroupId(Long groupId, String quickSearch, int deleted, Pageable pageable);
 
 }

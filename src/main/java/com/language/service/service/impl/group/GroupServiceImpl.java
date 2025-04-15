@@ -323,12 +323,12 @@ public class GroupServiceImpl extends AbstractService<Group, Long> implements Gr
     }
 
     @Override
-    public Page<UserDTO> findUsersInGroup(Long groupId, Pageable pageable) {
+    public Page<UserDTO> findUsersInGroup(UserGroupMapDTO request, Pageable pageable) {
         try {
-            if (groupId == null || groupId <= 0) {
+            if (request.getGroupId() == null || request.getGroupId() <= 0) {
                 throw new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_ID_REQUIRED);
             }
-            Page<User> search = userRepo.findUsersByGroupId(groupId, Constants.DELETE.INACTIVE, pageable);
+            Page<User> search = userRepo.findUsersByGroupId(request.getGroupId(), DataUtils.makeLikeQuery(request.getQuickSearch()), Constants.DELETE.INACTIVE, pageable);
             return new PageImpl<>(Mappers.getMapper(UserMapper.class).toDto(search.getContent()), pageable, search.getTotalElements());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
