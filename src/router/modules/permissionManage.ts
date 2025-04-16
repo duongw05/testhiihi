@@ -55,7 +55,19 @@ const route: Route[] = [
                     activeBreadcrumb: true,
                     title: 'message.menu.groupManage.self', hideClose: false
                 }
-            }
+            },
+            {
+                path: 'group-function-management',
+                name: 'function-function--management',
+                component: createNameComponent(() => import('@/views/main/permissionManagement/groupFunctionManage/GroupFunctionManage.vue')),
+                // @ts-ignore
+                activeRouter: true,
+                meta: {
+                    activeBreadcrumb: true,
+                    title: 'message.menu.functionManage.self', hideClose: false,
+                    hideMenu: true
+                }
+            },
         ]
     }
 ]

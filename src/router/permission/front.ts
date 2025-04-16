@@ -23,7 +23,7 @@ const FrontRoutes: Route[] = [
     // ...SystemManage,
     // ...SystemMessage,
     // ...Settings,
-    // ...Dynamic,
+    ...Dynamic,
 ]
 
 export default FrontRoutes

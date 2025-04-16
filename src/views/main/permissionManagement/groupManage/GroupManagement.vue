@@ -208,121 +208,51 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, reactive, ref} from 'vue'
-import {
-  Delete,
-  Document,
-  Download,
-  Edit,
-  Plus,
-  Refresh,
-  RefreshRight,
-  Search,
-  Setting,
-  Tickets,
-  View
-} from "@element-plus/icons";
-import {deepTrim, showConfirmDialog} from "@/utils/mixins/mixin";
-import {validate} from "vee-validate";
-import RoleGroupListForm from "@/views/main/permissionManagement/groupManage/RoleGroupListForm.vue";
-import UserListForm from "@/views/main/permissionManagement/groupManage/UserListForm.vue";
+import {defineComponent, onMounted, reactive, ref} from 'vue';
 import {useI18n} from 'vue-i18n';
 import {useRouter} from "vue-router";
 import {deleteGroup, quickSearchGroup, searchUserInGroup, deleteGroupUser} from "@/api/roleManage/groupUser";
-import {ElMessageBox} from "element-plus";
+import RoleGroupListForm from "@/views/main/permissionManagement/groupManage/RoleGroupListForm.vue";
+import UserListForm from "@/views/main/permissionManagement/groupManage/UserListForm.vue";
+import { showConfirmDialog } from '@/utils/mixins/mixin';
 
 export default defineComponent({
-  computed: {
-    RefreshRight() {
-      return RefreshRight
-    },
-    Download() {
-      return Download
-    },
-    Document() {
-      return Document
-    },
-    Delete() {
-      return Delete
-    },
-    View() {
-      return View
-    },
-    Setting() {
-      return Setting
-    },
-    Edit() {
-      return Edit
-    },
-    Search() {
-      return Search
-    },
-    Refresh() {
-      return Refresh
-    },
-    Plus() {
-      return Plus
-    },
-    Tickets() {
-      return Tickets
-    }
-  },
   components: {
     RoleGroupListForm,
     UserListForm
   },
-  methods: {
-    deepTrim,
-    validate
-  },
-  setup(props, ctx) {
+  setup() {
     const router = useRouter();
     const {t} = useI18n();
-    const visibleDrawer = ref<boolean>(false)
-    const userListVisibleDrawer = ref<boolean>(false)
+    const visibleDrawer = ref<boolean>(false);
+    const userListVisibleDrawer = ref<boolean>(false);
     const tableData = ref([]);
     const tableDataUser = ref([]);
-    let initialData = ref({})
-    const titleDrawer = ref('')
-    const typeAction = ref('')
+    const initialData = ref({});
+    const titleDrawer = ref('');
+    const typeAction = ref('');
     const groupId = ref<number | null>(null);
-    const loading = ref(false)
-    const titleUerListDrawer = ref('')
-    const collapseName = ref(['1', '2'])
+    const loading = ref(false);
+    const titleUerListDrawer = ref('');
+    const collapseName = ref(['1', '2']);
     const pagination = reactive({
       current: 1,
       total: 0,
       pageSize: 10,
-      size: 10,
     });
     const paginationUser = reactive({
       current: 1,
       total: 0,
       pageSize: 10,
-      size: 10,
     });
-    const searchQuery = reactive(
-        {
-          quickSearch: null,
-          quickSearchUser: null
-        }
-    );
-    const rules = {}
-    const areaData = ref([
-      {code: 'admin', name: 'Admin'},
-      {code: 'hr', name: 'HR'},
-      {code: 'scheduler', name: 'Scheduler'},
-      {code: 'am', name: 'AM'},
-      {code: 'ac', name: 'AC'},
-      {code: 'gv', name: 'GV'},
-      {code: 'tg', name: 'TG'}
-    ]);
+    const searchQuery = reactive({
+      quickSearch: null,
+      quickSearchUser: null,
+    });
 
     const resetForm = () => {
-      Object.assign(searchQuery, {
-        quickSearch: null
-      })
-    }
+      Object.assign(searchQuery, {quickSearch: null});
+    };
 
     const handlePageSize = (size: number) => {
       pagination.pageSize = size;
@@ -331,6 +261,7 @@ export default defineComponent({
     const handleCurrent = (page: number) => {
       pagination.current = page;
     };
+
     const handlePageSizeUser = (size: number) => {
       paginationUser.pageSize = size;
     };
@@ -340,31 +271,29 @@ export default defineComponent({
     };
 
     const openDrawer = (dataRow?: any) => {
-      initialData.value = {...dataRow}
-      visibleDrawer.value = true
-      titleDrawer.value = t(dataRow ? 'message.menu.groupManage.updateGroup' : 'message.menu.groupManage.createGroup')
-      typeAction.value = dataRow ? 'edit' : 'add'
-    }
+      initialData.value = {...dataRow};
+      visibleDrawer.value = true;
+      titleDrawer.value = t(dataRow ? 'message.menu.groupManage.updateGroup' : 'message.menu.groupManage.createGroup');
+      typeAction.value = dataRow ? 'edit' : 'add';
+    };
+
     const clickRowGetData = (dataRow?: any) => {
-      groupId.value = dataRow.id
-      getUserInGroup(dataRow.id);
-    }
+      groupId.value = dataRow.id;
+      getUserInGroup();
+    };
 
     const handleClose = () => {
       visibleDrawer.value = false;
-    }
+    };
+
     const openUserListDrawer = () => {
-      userListVisibleDrawer.value = true
-      titleUerListDrawer.value = t('message.menu.groupManage.createUserToRole')
-    }
+      userListVisibleDrawer.value = true;
+      titleUerListDrawer.value = t('message.menu.groupManage.createUserToRole');
+    };
 
     const handleCloseUserListDrawer = () => {
       userListVisibleDrawer.value = false;
-    }
-
-    const navigatePartner = (id?: any) => {
-      router.push({name: 'user-detail', params: {data: id}});
-    }
+    };
 
     const delGroup = async (value: any) => {
       await showConfirmDialog(
@@ -380,6 +309,8 @@ export default defineComponent({
               await fetchDataGroup();
             } catch (error) {
               console.error(error);
+            } finally {
+              loading.value = false;
             }
           }
       );
@@ -399,46 +330,49 @@ export default defineComponent({
               await getUserInGroup();
             } catch (error) {
               console.error(error);
+            }finally {
+              loading.value = false;
             }
           }
       );
     };
+
     const fetchDataGroup = async () => {
       try {
         loading.value = true;
-        pagination.current = Math.max(pagination.current, 1); // Đảm bảo currentPage không dưới 1
-        pagination.current--;
+        pagination.current = Math.max(pagination.current, 1) - 1;
         const {data} = await quickSearchGroup(searchQuery, pagination);
         tableData.value = data.data.content;
         pagination.total = data.data.totalElements;
         pagination.current = data.data.pageable.pageNumber + 1;
         pagination.pageSize = data.data.pageable.pageSize;
-        loading.value = false;
       } catch (error) {
         console.error(error);
+      } finally {
         loading.value = false;
       }
     };
+
     const getUserInGroup = async () => {
       try {
         loading.value = true;
-        paginationUser.current = Math.max(paginationUser.current, 1); // Đảm bảo currentPage không dưới 1
-        paginationUser.current--;
+        paginationUser.current = Math.max(paginationUser.current, 1) - 1;
         const param = {
           groupId: groupId.value,
-          quickSearch: searchQuery.quickSearchUser
-        }
+          quickSearch: searchQuery.quickSearchUser,
+        };
         const {data} = await searchUserInGroup(param, paginationUser);
         tableDataUser.value = data.data.content;
         paginationUser.total = data.data.totalElements;
         paginationUser.current = data.data.pageable.pageNumber + 1;
         paginationUser.pageSize = data.data.pageable.pageSize;
-        loading.value = false;
       } catch (error) {
         console.error(error);
+      } finally {
         loading.value = false;
       }
     };
+
     onMounted(() => {
       if (router.currentRoute.value.name === 'group-management') {
         fetchDataGroup();
@@ -458,15 +392,12 @@ export default defineComponent({
       titleUerListDrawer,
       visibleDrawer,
       userListVisibleDrawer,
-      areaData,
-      rules,
       searchQuery,
       collapseName,
       pagination,
       paginationUser,
       tableData,
       tableDataUser,
-      navigatePartner,
       handlePageSize,
       handlePageSizeUser,
       handleCurrent,
@@ -476,10 +407,10 @@ export default defineComponent({
       handleClose,
       clickRowGetData,
       openUserListDrawer,
-      handleCloseUserListDrawer
-    }
+      handleCloseUserListDrawer,
+    };
   },
-})
+});
 </script>
 
 <style lang="scss" scoped>

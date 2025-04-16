@@ -99,7 +99,6 @@
           <el-button :icon="Plus" @click="handleAddNew"
                      color="var(--system-primary-color)" size="default" type="primary">{{ t('message.common.add') }}
           </el-button>
-
         </div>
       </div>
     </div>
