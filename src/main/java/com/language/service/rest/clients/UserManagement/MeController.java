@@ -1,5 +1,6 @@
 package com.language.service.rest.clients.UserManagement;
 
+import com.language.service.service.abs.functioncatalog.FunctionCatalogService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -29,11 +30,13 @@ public class MeController {
 
     private final UserService userService;
     private final PermissionService permissionService;
+    private final FunctionCatalogService functionCatalogService;
     private final NotificationSearchService notificationSearchService;
 
-    public MeController(UserService userService, PermissionService permissionService, NotificationSearchService notificationSearchService) {
+    public MeController(UserService userService, PermissionService permissionService, FunctionCatalogService functionCatalogService, NotificationSearchService notificationSearchService) {
         this.userService = userService;
         this.permissionService = permissionService;
+        this.functionCatalogService = functionCatalogService;
         this.notificationSearchService = notificationSearchService;
 
     }
@@ -55,7 +58,7 @@ public class MeController {
         if (auth instanceof UsernamePasswordAuthenticationToken) {
             UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) auth;
             UserMinDTO userMinDTO = (UserMinDTO) token.getPrincipal();
-            return permissionService.allPermCode(userMinDTO.getId());
+            return functionCatalogService.allPermCode(userMinDTO.getId());
         }
         return Collections.emptyList();
     }

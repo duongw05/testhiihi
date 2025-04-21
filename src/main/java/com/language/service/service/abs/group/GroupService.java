@@ -59,4 +59,7 @@ public interface GroupService extends BaseService<Group, Long> {
     BaseResponseDTO saveUserGroupMaps(List<UserGroupMapManagementDTO> userGroupMaps);
 
     BaseResponseDTO deleteUserFromGroup(Long userId, Long groupId);
+
+    GroupDTO getGroupById(Long groupId);
+
 }

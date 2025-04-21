@@ -1,6 +1,7 @@
 package com.language.service.security;
 
 import com.language.service.domain.dtos.UserMinDTO;
+import com.language.service.repo.jpa.functioncatalog.FunctionCatalogRepo;
 import com.language.service.repo.permission.PermissionRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +14,10 @@ import java.io.Serializable;
 public class CustomPermissionEvaluator implements PermissionEvaluator {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomPermissionEvaluator.class);
-    private final PermissionRepo permissionRepo;
+    private final FunctionCatalogRepo functionCatalogRepo;
 
-    public CustomPermissionEvaluator(PermissionRepo permissionRepo) {
-        this.permissionRepo = permissionRepo;
+    public CustomPermissionEvaluator(FunctionCatalogRepo functionCatalogRepo) {
+        this.functionCatalogRepo = functionCatalogRepo;
     }
 
     public boolean hasPermission(Authentication authentication, String permission) {
@@ -25,7 +26,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             UserMinDTO userMinDTO = (UserMinDTO) token.getPrincipal();
             long userId = userMinDTO.getId();
             long start = System.currentTimeMillis();
-            boolean hasPerm = permissionRepo.hasPermission(userId, permission);
+            boolean hasPerm = functionCatalogRepo.hasPermission(userId, permission);
             System.out.println("HAS USER    ID: " + userId);
             System.out.println("HAS PERMISSION: " + hasPerm);
             long duration = System.currentTimeMillis() - start;

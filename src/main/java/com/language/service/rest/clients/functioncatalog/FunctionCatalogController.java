@@ -44,4 +44,9 @@ public class FunctionCatalogController {
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         return responseFactory.success(functionCatalogService.deleteFunctionCatalog(id));
     }
+    @GetMapping(value = "/getFunctionTree")
+    public ResponseEntity<?> getFunctionCatalogTree() {
+        return responseFactory.success(functionCatalogService.getFunctionCatalogTree());
+    }
+
 }

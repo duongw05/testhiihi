@@ -206,5 +206,9 @@ public class GroupController {
     public ResponseEntity<?> deleteUserFromGroup(@PathVariable Long userId, @PathVariable Long groupId) throws Exception {
         return responseFactory.success(groupService.deleteUserFromGroup(userId, groupId));
     }
-
+    @GetMapping("/searchGroupById/{id}")
+    public ResponseEntity<?> searchGroupById(@PathVariable Long id) throws Exception{
+        GroupDTO groupDTO = groupService.getGroupById(id);
+        return responseFactory.success(groupDTO);
+    }
 }

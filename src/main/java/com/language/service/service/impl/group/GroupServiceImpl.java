@@ -345,7 +345,7 @@ public class GroupServiceImpl extends AbstractService<Group, Long> implements Gr
                 UserGroupMap entity = new UserGroupMap();
                 entity.setUserId(userGroupMapDTO.getUserId());
                 entity.setGroupId(userGroupMapDTO.getGroupId());
-                entity.setDeleted(Constants.STATUS.ACTIVE);
+                entity.setStatus(Constants.STATUS.ACTIVE);
                 entity.setDeleted(Constants.DELETE.INACTIVE);
                 userGroupMapRepository.save(entity);
             }
@@ -377,5 +377,12 @@ public class GroupServiceImpl extends AbstractService<Group, Long> implements Gr
             logger.error(e.getMessage(), e);
             throw e;
         }
+    }
+
+    @Override
+    public GroupDTO getGroupById(Long groupId) {
+        Group entity = groupRepo.findGroupById(groupId, Constants.DELETE.INACTIVE).orElseThrow(()
+                -> new BusinessException(ConstantsErrorCode.GROUP_USER_MANAGEMENT_ERRORS.GROUP_USER_NOT_FOUND));
+        return Mappers.getMapper(GroupMapper.class).toDTO(entity);
     }
 }
