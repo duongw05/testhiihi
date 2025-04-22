@@ -37,11 +37,13 @@ export default defineComponent({
   //width: 100%;
   cursor: pointer;
   background-color: var(--system-logo-background);
+  --system-logo-background: #4CAF50;
 
   h1 {
     font-size: 18px;
     white-space: nowrap;
     color: var(--system-logo-color);
+    --system-logo-color: #FFFFFF;
   }
 }
 </style>

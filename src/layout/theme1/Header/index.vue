@@ -104,7 +104,9 @@ export default defineComponent({
     align-items: center;
     height: 60px;
     background-color: var(--system-header-background);
+    --system-header-background: #4CAF50;
     padding-right: 22px;
+    color: #FFFFFF;
   }
   .left-box {
     height: 100%;
@@ -125,6 +127,7 @@ export default defineComponent({
       }
       i {
         color: var(--system-header-text-color);
+        --system-header-text-color: #FFFFFF;
       }
     }
   }
@@ -141,6 +144,7 @@ export default defineComponent({
         align-items: center;
         :deep(i) {
           color: var(--system-header-text-color);
+          --system-header-text-color: #FFFFFF;
         }
       }
     }
@@ -148,6 +152,7 @@ export default defineComponent({
       margin-left: 20px;
       .el-dropdown-link {
         color: var(--system-header-breadcrumb-text-color);
+        --system-header-breadcrumb-text-color: #FFFFFF;
       }
     }
   }

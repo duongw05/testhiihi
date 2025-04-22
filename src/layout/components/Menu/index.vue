@@ -73,6 +73,7 @@ export default defineComponent({
 <style lang="scss" scoped>
   .el-scrollbar {
     background-color: var(--system-menu-background);
+    --system-menu-background: #2E7D32;
     flex: 1;
   }
   .layout-menu {
@@ -84,11 +85,14 @@ export default defineComponent({
     :deep() {
       .el-menu-item, .el-sub-menu {
         background-color: var(--system-menu-background) !important;
+        --system-menu-background: #2E7D32;
       }
       .el-menu-item i, .el-menu-item-group__title, .el-sub-menu__title i {
         color: var(--system-menu-text-color);
+        --system-menu-text-color: #FFFFFF;
       }
       .el-menu-item, .el-sub-menu__title{
+          color: #FFFFFF;
         &.is-active {
           background-color: var(--system-primary-color) !important;
           color: var(--system-primary-text-color) !important;
@@ -102,18 +106,22 @@ export default defineComponent({
         }
         &:hover {
           background-color: var(--system-menu-hover-background) !important;
+          --system-menu-hover-background: #66BB6A;
+
         }
       }
       .el-sub-menu {
         &.is-active {
           >.el-sub-menu__title, >.el-sub-menu__title i {
-            color: var(--system-menu-submenu-active-color) !important;
+            color: #FFFFFF;
           }
         }
         .el-menu-item {
           background-color: var(--system-menu-children-background) !important;
+          --system-menu-children-background: #4CAF50;
           &.is-active {
             background-color: var(--system-primary-color) !important;
+            --system-primary-color: #A5D6A7;
             color: var(--system-primary-text-color) !important;
             &:hover {
               background-color: var(--system-primary-color) !important;
@@ -127,6 +135,7 @@ export default defineComponent({
         .el-sub-menu {
           .el-sub-menu__title {
             background-color: var(--system-menu-children-background) !important;
+            --system-menu-children-background: #2E7D32;
             &:hover {
               background-color: var(--system-menu-hover-background) !important;
             }

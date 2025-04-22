@@ -71,11 +71,13 @@ export default defineComponent({
 
   .no-redirect {
     color: var(--system-header-breadcrumb-text-color);
+    --system-header-breadcrumb-text-color: #FFFFFF;
     cursor: text;
   }
 
   a {
     color: var(--system-header-text-color);
+    --system-header-text-color: #FFFFFF;
   }
 }
 </style>

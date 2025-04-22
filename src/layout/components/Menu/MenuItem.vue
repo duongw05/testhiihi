@@ -166,6 +166,7 @@ export default defineComponent({
 }
 
 .text-container {
+  color: #FFFFFF;
   display: flex;
   //justify-content: center; /* Căn giữa theo chiều ngang */
   align-items: center; /* Căn giữa theo chiều dọc */
