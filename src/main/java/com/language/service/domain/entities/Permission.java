@@ -75,15 +75,6 @@ import java.io.Serializable;
                                         @ColumnResult(name = "code", type = String.class)
                                 }
                         )
-                ),
-                @SqlResultSetMapping(
-                        name = "PermissionCodeDTOMapping",
-                        classes = @ConstructorResult(
-                                targetClass = PermissionCodeDTO.class,
-                                columns = {
-                                        @ColumnResult(name = "code", type = String.class)
-                                }
-                        )
                 )
         }
 )
