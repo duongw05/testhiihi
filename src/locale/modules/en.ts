@@ -2,6 +2,7 @@ import locale from 'element-plus/dist/locale/en.mjs'
 import {dashboard} from "@/locale/modules/dashboard/dashboard_en";
 import {settings} from "@/locale/modules/settings/settings_en";
 import {permissionManage} from "@/locale/modules/permissionManage/permissionManage_en";
+import {schoolManage} from "@/locale/modules/schoolManage/schoolManage_en";
 
 const lang = {
     el: locale.el, // element-plus i18 setting
@@ -11,6 +12,7 @@ const lang = {
             ...dashboard,
             ...settings,
             ...permissionManage,
+            ...schoolManage,
             system: {
                 name: 'system',
                 redirect: 'redirect',

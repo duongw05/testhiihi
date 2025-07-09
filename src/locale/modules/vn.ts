@@ -2,6 +2,7 @@ import locale from 'element-plus/dist/locale/vi.mjs'
 import {dashboard} from "@/locale/modules/dashboard/dashboard_vn";
 import {settings} from "@/locale/modules/settings/settings_vn";
 import {permissionManage} from "@/locale/modules/permissionManage/permissionManage_vn";
+import {schoolManage} from "@/locale/modules/schoolManage/schoolManage_vn";
 
 const lang = {
     el: locale.el, // element-plus i18 setting
@@ -11,6 +12,7 @@ const lang = {
             ...dashboard,
             ...settings,
             ...permissionManage,
+            ...schoolManage,
             system: {
                 name: 'Hệ thống',
                 redirect: 'redirect',
@@ -28,7 +30,7 @@ const lang = {
                 map: 'map',
                 cutPhoto: 'cutPhoto',
                 rightMenu: 'rightMenu',
-                exportExcel:'exportExcel'
+                exportExcel: 'exportExcel'
             },
             page: {
                 name: 'page',

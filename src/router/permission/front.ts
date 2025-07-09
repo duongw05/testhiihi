@@ -10,10 +10,13 @@ import Customer from "@/router/modules/salesManagement";
 import Dynamic from "@/router/modules/dynamic";
 import SalePolicy from "@/router/modules/salePolicy";
 import systemSetup from "@/router/modules/systemSetup";
+import salesManagement from "@/router/modules/salesManagement";
+import schoolManager from "@/router/modules/schoolManager";
 
 const FrontRoutes: Route[] = [
     ...Dashboard,
     ...PermissionManage,
+    ...schoolManager,
     // ...Customer,
     // ...SalePolicy,
     // ...systemSetup,
