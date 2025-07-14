@@ -1,4 +1,4 @@
-import locale from 'element-plus/dist/locale/vi.mjs'
+import locale from 'element-plus/dist/locale/vi.mjs'; // Giữ nguyên dòng này nếu bạn đang import Element Plus locale
 import {dashboard} from "@/locale/modules/dashboard/dashboard_vn";
 import {settings} from "@/locale/modules/settings/settings_vn";
 import {permissionManage} from "@/locale/modules/permissionManage/permissionManage_vn";
@@ -12,7 +12,7 @@ const lang = {
             ...dashboard,
             ...settings,
             ...permissionManage,
-            ...schoolManage,
+            ...schoolManage, // Đảm bảo schoolManage đã được import và thêm vào đây
             system: {
                 name: 'Hệ thống',
                 redirect: 'redirect',
@@ -82,45 +82,108 @@ const lang = {
             },
         },
         common: {
+            // Các nút và hành động chung
             delConfirm: 'Bạn có muốn xoá bản ghi này không',
             success: 'Thành công',
             err: 'Thất bại',
-            advancedSearch: 'Tìm kiếm nâng cao',
-            searchInfo: 'Thông tin tìm kiếm',
-            search: 'Tìm kiếm',
-            searchTip: 'Vui lòng nhập từ khóa',
+            info: 'Thông báo', // Thêm thông báo chung
             add: 'Thêm mới',
             update: 'Cập nhật',
             del: 'Xóa',
             view: 'Xem chi tiết',
-            delName: 'Xóa {name}',
-            delBat: 'Xóa chọn',
-            delTip: 'Bạn có chắc chắn xóa dữ liệu đã chọn không?',
-            handle: 'xử lý',
-            importData: 'Nhập dữ liệu chấm công',
-            exportExcel:'Xuất dữ liệu chấm công',
-            exportExcelTip:'please input file name',
-            login: 'Đăng nhập thành công',
-            placeholderAll: 'Tất cả',
+            handle: 'Xử lý',
+            close: 'Đóng',
+            authorize: 'Phân quyền',
+            agree: 'Đồng ý',
+            cancel: 'Hủy',
+
+            // Nút và chức năng Import/Export
+            exportExcel: 'Xuất Excel', // Thay đổi từ 'Xuất dữ liệu chấm công' cho mục đích chung
+            exportExcelTip: 'Vui lòng nhập tên file',
+            importConfirm: 'Bạn có chắc chắn muốn nhập dữ liệu không? Thao tác này có thể thay đổi dữ liệu hiện có.',
+            importTitle: 'Xác nhận nhập dữ liệu',
+            importSuccess: 'Nhập dữ liệu thành công!',
+            importCanceled: 'Đã hủy thao tác nhập dữ liệu.',
+            importFailed: 'Nhập dữ liệu thất bại!',
+            importNotConfigured: 'Chức năng Import chưa được cấu hình.', // Thêm thông báo
+            exportConfirm: 'Bạn có chắc chắn muốn xuất dữ liệu ra Excel không?',
+            exportTitle: 'Xác nhận xuất Excel',
+            exportSuccess: 'Xuất Excel thành công!',
+            exportCanceled: 'Đã hủy thao tác xuất Excel.',
+            exportFailed: 'Xuất Excel thất bại!',
+            exportNotConfigured: 'Chức năng Xuất Excel chưa được cấu hình.', // Thêm thông báo
+
+            importFileRequired: 'Vui lòng chọn file Excel.',
+            invalidImportData: 'Dữ liệu không hợp lệ. Vui lòng kiểm tra.',
+            importErrorFileDownloaded: 'Có lỗi trong quá trình nhập. File lỗi đã được tải xuống.',
+            downloadTemplateSuccess: 'Tải file mẫu thành công!',
+            downloadTemplateFailed: 'Không thể tải file mẫu!',
+            warning: 'Cảnh báo',
+
+            importData: 'Nhập dữ liệu {name}',
+            dragOr: 'Kéo file vào đây hoặc',
+            clickToChooseExcel: 'nhấn để chọn file Excel',
+            uploadTip: 'Chỉ chấp nhận file Excel (.xls, .xlsx). Vui lòng chọn một file.',
+            or: 'Hoặc',
+            downloadTemplate: 'Tải dữ liệu mẫu',
+            upload: 'Tải lên',
+            uploading: 'Đang tải lên...',
+
+            // Tìm kiếm và bảng
+            advancedSearch: 'Tìm kiếm nâng cao',
+            searchInfo: 'Thông tin tìm kiếm',
+            search: 'Tìm kiếm',
+            searchTip: 'Vui lòng nhập từ khóa',
             reEnter: 'Nhập lại',
             export: 'Xuất báo cáo',
             searchResult: 'Kết quả tìm kiếm',
+            searchResults: 'Kết quả tìm kiếm',
+            checkSearchConditions: 'Vui lòng kiểm tra điều kiện tìm kiếm',
+            fetchDataError: 'Lỗi khi lấy dữ liệu',
+            stt: 'STT', // Thêm cho cột STT
+            actions: 'Hành động',
+
+            // Popup/Form
             chooseValue: 'Chọn giá trị',
-            close: 'Đóng',
-            authorize: 'Phân quyền',
             createInfo: 'Thêm mới {name}',
-            updateInfo: 'Cập nhật {name} ',
+            updateInfo: 'Cập nhật {name}',
             editInfo: 'Sửa {name}',
             viewInfo: 'Xem chi tiết {name}',
-            addSuccess:'Thêm mới {name} thành công',
+            addSuccess: 'Thêm mới {name} thành công',
             updateSuccess: 'Cập nhật {name} thành công',
+            delName: 'Xóa {name}',
+            delBat: 'Xóa chọn',
+            delTip: 'Bạn có chắc chắn xóa dữ liệu đã chọn không?',
+            deleteFailed: 'Xóa thất bại!', // Thêm thông báo lỗi xóa
             errServer: 'Lỗi hệ thống, vui lòng thử lại sau',
             placeholder: 'Nhập {name}',
-            searchResults: 'Kết quả tìm kiếm',
-            actions: 'Hành động',
-            checkSearchConditions: 'Vui lòng kiểm tra điều kiện tìm kiếm',
-            fetchDataError: "Lỗi khi lấy dữ liệu",
+            placeholderAll: 'Tất cả',
+
+
+            // Các trường thông tin chung (ví dụ từ SchoolManagement)
+            schoolCode: 'Mã trường học',
+            schoolName: 'Tên trường học',
+            schoolTypeId: 'Cấp học',
+            workingOffsite: 'Working Offsite',
+            areaCvct: 'Khu vực theo CVCT',
+            programs: 'Chương trình',
+            math: 'Toán', // Thêm
+            science: 'Khoa học', // Thêm
+            isPremium: 'Premium School', // Thêm
+            yes: 'Có', // Thêm
+            no: 'Không', // Thêm
+            mapLink: 'Link bản đồ', // Thêm
+            areaPhuong: 'Khu vực (Phường)', // Thêm
+            address: 'Địa chỉ', // Thêm
+            minuteNum: 'Số phút chấm công/Số phút thực tế', // Thêm
+            startYear: 'Năm học bắt đầu hợp tác', // Thêm
+            description: 'Mô tả', // Thêm
+            schoolDiagram: 'Sơ đồ trường học', // Thêm
+
+
+            // Trạng thái
             status: {
+                label: 'Trạng thái', // Đổi key từ status sang status.label
                 active: 'Hiệu lực',
                 inactive: 'Hết hiệu lực',
             },
@@ -204,4 +267,4 @@ const lang = {
     }
 }
 
-export default lang
+export default lang;

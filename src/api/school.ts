@@ -13,12 +13,6 @@ export function searchSchool(params: any, page = 0, size = 10) {
         }
     })
 }
-export function getSchoolDetail(id: number) {
-    return request({
-        url: `${prefix}detail/${id}`,
-        method: 'get',
-    })
-}
 
 export function deleteSchool(id: number) {
     return request({
@@ -27,11 +21,11 @@ export function deleteSchool(id: number) {
     });
 }
 
-export function exportSchoolExcel(params: any) {
+export function exportSchoolExcel(data: any) {
     return request({
-        url:  `${prefix}export-excel`,
-        method: 'get',
-        params,
+        url: `${prefix}export-school`,
+        method: 'post',
+        data,
         responseType: 'blob',
     });
 }
@@ -50,3 +44,26 @@ export function updateSchool(data: object) {
         data
     })
 }
+
+export function importSchoolExcel(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return request({
+        url: `${prefix}import-schools`,
+        method: 'post',
+        data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+}
+
+export function downloadSchoolTemplate() {
+    return request({
+        url: `${prefix}download-template`,
+        method: 'get',
+        responseType: 'blob',
+    });
+}
+

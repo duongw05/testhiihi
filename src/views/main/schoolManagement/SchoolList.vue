@@ -1,5 +1,5 @@
 <template>
-  <div class="box">
+  <div>
     <SearchTable
         :config="schoolConfig"
         :fetchData="fetchSchoolData"
@@ -7,34 +7,35 @@
         :handleDelete="handleSchoolDelete"
         :handleExport="handleSchoolExport"
         :handleImport="handleSchoolImport"
+        :loading="isTableLoading"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue';
+import {ref, reactive, computed, onMounted, nextTick} from 'vue';
 import SearchTable from "@/views/main/dynamicForm/SearchTable.vue";
-// import { useI18n } from "vue-i18n"; // Bỏ import i18n
+
 import { ElNotification, ElMessage, ElMessageBox } from 'element-plus';
 
 import {
   searchSchool,
   addSchool,
   updateSchool,
-  deleteSchool, // Giữ lại nếu bạn có hàm deleteSchool thật sự
-  exportSchoolExcel
+  deleteSchool,
+  exportSchoolExcel, importSchoolExcel
 } from '@/api/school';
 import { fetchAllSchoolType } from '@/api/schoolType';
 import { fetchAllTblUser } from "@/api/tblUser";
 import { fetchAllWorkingOffsite } from "@/api/workingOffsite";
-// Import handleErr và handleSuccess từ mixin, nhưng sẽ truyền null cho tham số 't'
-import { handleErr, handleSuccess, showConfirmDialog } from '@/utils/mixins/mixin';
+import {useI18n} from "vue-i18n";
 
-// const { t } = useI18n(); // Bỏ khai báo t
+const { t } = useI18n();
 
 const schoolTypeOptions = ref<any[]>([]);
 const userList = ref<any[]>([]);
 const workingOffsiteList = ref<any[]>([]);
+const isTableLoading = ref(false);
 
 const currentFilterQuery = reactive({
   name: '',
@@ -66,168 +67,148 @@ const loadSelectOptions = async () => {
 
 const getStatusOptions = () => {
   return [
-    { "value": 1, "label": 'Hiệu lực' },
-    { "value": 0, "label": 'Hết hiệu lực' },
+    { "value": 1, "label": t('message.menu.schoolManage.effective') },
+    { "value": 0, "label": t('message.menu.schoolManage.inactive') },
   ];
 };
 
 const schoolConfig = computed(() => ({
-  "title": "Quản lý Trường học",
+  title: t('message.menu.schoolManage.self'),
   "searchForm": {
     "fields": [
       {
         "type": "combobox",
         "key": "schoolTypeId",
-        "label": "Cấp học",
-        "placeholder": "Chọn Cấp học",
+        "label": t('message.menu.schoolManage.schoolType'),
+        "placeholder":  t('message.menu.schoolManage.placeholder.select', { field: t('message.menu.schoolManage.schoolType') }),
         "defaultValue": null,
-        "span": 20,
+        "span": 6,
         "options": schoolTypeOptions.value.map(item => ({ label: item.name, value: item.id }))
       },
       {
         "type": "text",
         "key": "name",
-        "label": "Tên trường học",
-        "placeholder": "Nhập tên trường học",
+        "label": t('message.menu.schoolManage.schoolName'),
+        "placeholder": t('message.menu.schoolManage.placeholder.select', { field: t('message.menu.schoolManage.schoolName') }),
         "defaultValue": "",
-        "span": 8,
+        "span": 6,
       },
       {
         "type": "text",
         "key": "code",
-        "label": "Mã trường học",
-        "placeholder": "Nhập mã trường học",
+        "label": t('message.menu.schoolManage.schoolCode'),
+        "placeholder": t('message.menu.schoolManage.placeholder.select', { field: t('message.menu.schoolManage.schoolCode') }),
         "defaultValue": "",
-        "span": 8,
+        "span": 6,
       },
       {
         "type": "combobox",
         "key": "workingOffsiteId",
-        "label": "Working Offsite",
-        "placeholder": "Chọn workingOffsite",
+        "label": t('message.menu.schoolManage.workingOffsite'),
+        "placeholder": t('message.menu.schoolManage.placeholder.select', { field: t('message.menu.schoolManage.workingOffsite') }),
         "defaultValue": null,
-        "span": 8,
+        "span": 6,
         "options": workingOffsiteList.value.map(item => ({ label: item.name, value: item.id }))
       },
       {
         "type": "text",
         "key": "areaCvct",
-        "label": "Khu vực theo CVCT",
-        "placeholder": "Nhập khu vực CVCT",
+        "label": t('message.menu.schoolManage.areaCvct'),
+        "placeholder": t('message.menu.schoolManage.placeholder.select', { field: t('message.menu.schoolManage.areaCvct') }),
         "defaultValue": "",
-        "span": 8
+        "span": 6
       },
       {
         "type": "combobox",
         "key": "programs",
-        "label": "Chương trình Toán-Khoa",
-        "placeholder": "Tất cả",
+        "label": t('message.menu.schoolManage.programs'),
+        "placeholder": t('message.menu.schoolManage.placeholder.all'),
         "defaultValue": "",
-        "span": 8,
+        "span": 6,
         "options": [
-          { label: "Tất cả", value: "" },
-          { label: "Toán", value: "Toán" },
-          { label: "Khoa học", value: "Khoa học" }
+          { label: t('message.menu.schoolManage.placeholder.all'), value: "" },
+          { label: t('message.menu.schoolManage.programMath'), value: "Toán" },
+          { label: t('message.menu.schoolManage.programScience'), value: "Khoa học" }
         ]
       },
       {
         "type": "combobox",
         "key": "rhta",
-        "label": "RHTA",
-        "placeholder": "Chọn RHTA",
+        "label": t('message.menu.schoolManage.rhta'),
+        "placeholder": t('message.menu.schoolManage.placeholder.select', { field: t('message.menu.schoolManage.rhta') }),
         "defaultValue": null,
-        "span": 8,
-        "options": userList.value.map(item => ({ label: item.fullName || item.username, value: item.id }))
+        "span": 6,
+        "options": userList.value.map(item => ({ label: item.username, value: item.id }))
       },
       {
         "type": "combobox",
         "key": "scheduler",
-        "label": "Scheduler",
-        "placeholder": "Chọn Scheduler",
+        "label": t('message.menu.schoolManage.scheduler'),
+        "placeholder": t('message.menu.schoolManage.placeholder.select', { field: t('message.menu.schoolManage.scheduler') }),
         "defaultValue": null,
-        "span": 8,
-        "options": userList.value.map(item => ({ label: item.fullName || item.username, value: item.id }))
+        "span": 6,
+        "options": userList.value.map(item => ({ label: item.username , value: item.id }))
       },
       {
         "type": "combobox",
         "key": "schedulerCumTa",
-        "label": "Scheduler-cum-TA",
-        "placeholder": "Chọn Scheduler-cum-TA",
+        "label": t('message.menu.schoolManage.schedulerCumTa'),
+        "placeholder": t('message.menu.schoolManage.placeholder.select', { field: t('message.menu.schoolManage.schedulerCumTa') }),
         "defaultValue": null,
-        "span": 8,
-        "options": userList.value.map(item => ({ label: item.fullName || item.username, value: item.id }))
+        "span": 6,
+        "options": userList.value.map(item => ({ label: item.username, value: item.id }))
       },
       {
         "type": "combobox",
         "key": "status",
-        "label": "Trạng thái",
-        "placeholder": "Tất cả",
+        "label": t('message.menu.schoolManage.status'),
+        "placeholder": t('message.menu.schoolManage.placeholder.all'),
         "defaultValue": null,
-        "span": 8,
-        "options": [{ label: "Tất cả", value: null }, ...getStatusOptions()]
+        "span": 6,
+        "options": [{ label: t('message.menu.schoolManage.placeholder.all'), value: null }, ...getStatusOptions()]
       },
     ]
   },
   "table": {
     "columns": [
-      { "key": "code", "label": "Mã Trường học", "width": "120px" },
-      { "key": "name", "label": "Tên Trường Học" },
+      { "key": "code", "label": t('message.menu.schoolManage.schoolCode'), "width": "120px" },
+      { "key": "name", "label": t('message.menu.schoolManage.schoolName') },
       {
-        "key": "schoolTypeId",
-        "label": "Cấp học",
+        "key": "schoolTypeName",
+        "label": t('message.menu.schoolManage.schoolType'),
         "width": "120px",
-        "formatter": (row: any) => {
-          const schoolType = schoolTypeOptions.value.find(st => st.id === row.schoolTypeId);
-          return schoolType ? schoolType.name : 'N/A';
-        }
       },
       {
-        "key": "workingOffsiteId",
-        "label": "Working Offsite",
+        "key": "workingOffsiteName",
+        "label": t('message.menu.schoolManage.workingOffsite'),
         "width": "120px",
-        "formatter": (row: any) => {
-          const offsite = workingOffsiteList.value.find(wo => wo.id === row.workingOffsiteId);
-          return offsite ? offsite.name : 'N/A';
-        }
       },
-      { "key": "areaCvct", "label": "Khu vực theo CVCT", "width": "120px" },
+      { "key": "areaCvct", "label": t('message.menu.schoolManage.areaCvct'), "width": "120px" },
       {
         "key": "programs",
-        "label": "Chương trình toán-khoa",
+        "label": t('message.menu.schoolManage.programs'),
         "width": "120px",
         "formatter": (row: any) => {
           return Array.isArray(row.programs) ? row.programs.join(', ') : row.programs;
         }
       },
       {
-        "key": "rhta",
-        "label": "RHTA",
+        "key": "rhtaName",
+        "label": t('message.menu.schoolManage.rhta'),
         "width": "120px",
-        "formatter": (row: any) => {
-          const user = userList.value.find(u => u.id === row.rhta);
-          return user ? (user.fullName || user.username) : 'N/A';
-        }
       },
       {
-        "key": "scheduler",
-        "label": "Scheduler",
+        "key": "schedulerName",
+        "label": t('message.menu.schoolManage.scheduler'),
         "width": "120px",
-        "formatter": (row: any) => {
-          const user = userList.value.find(u => u.id === row.scheduler);
-          return user ? (user.fullName || user.username) : 'N/A';
-        }
       },
       {
-        "key": "schedulerCumTa",
-        "label": "Scheduler-cum-TA",
+        "key": "schedulerCumTaName",
+        "label": t('message.menu.schoolManage.schedulerCumTa'),
         "width": "120px",
-        "formatter": (row: any) => {
-          const user = userList.value.find(u => u.id === row.schedulerCumTa);
-          return user ? (user.fullName || user.username) : 'N/A';
-        }
       },
       {
-        "key": "status", "label": "Trạng thái", "width": "120px",
+        "key": "status", "label": t('message.menu.schoolManage.status'), "width": "120px",
         "formatter": (row: any) => {
           return row.status === 1 ? 'Hiệu lực' : 'Hết hiệu lực';
         },
@@ -237,208 +218,410 @@ const schoolConfig = computed(() => ({
       }
     ],
     "actions": [
-      { "type": "edit", "label": "Sửa", "icon": "Edit" },
-      { "type": "view", "label": "Xem", "icon": "View" },
-      { "type": "delete", "label": "Xóa", "icon": "Delete", "buttonType": "danger" }
+      { "type": "edit", "label": t('message.menu.schoolManage.actions.edit'), "icon": "Edit" },
+      { "type": "view", "label": t('message.menu.schoolManage.actions.view'), "icon": "View" },
+      { "type": "delete", "label": t('message.menu.schoolManage.actions.delete'), "icon": "Delete", "buttonType": "danger" }
     ]
   },
   "popup": {
     "fields": [
       {
-        "type": "text",
-        "key": "code",
-        "label": "Mã trường học",
-        "placeholder": "Nhập mã trường học",
-        "rules": [
-          { required: true, message: 'Mã trường học không được bỏ trống', trigger: 'blur' },
-          { max: 255, message: 'Mã trường học không được vượt quá 255 ký tự', trigger: 'blur' }
+        type: "text",
+        key: "code",
+        label: t('message.menu.schoolManage.schoolCode'),
+        placeholder: t('message.menu.schoolManage.placeholder.input', {
+          field: t('message.menu.schoolManage.schoolCode')
+        }),
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.schoolCode')
+            }),
+            trigger: 'blur'
+          },
+          {
+            max: 100,
+            message: t('message.menu.schoolManage.validation.max', {
+              field: t('message.menu.schoolManage.schoolCode'),
+              max: 100
+            }),
+            trigger: 'blur'
+          }
+        ]
+      },
+      {
+        type: "text",
+        key: "name",
+        label: t('message.menu.schoolManage.schoolName'),
+        placeholder: t('message.menu.schoolManage.placeholder.input', {
+          field: t('message.menu.schoolManage.schoolName')
+        }),
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.schoolName')
+            }),
+            trigger: 'blur'
+          },
+          {
+            max: 255,
+            message: t('message.menu.schoolManage.validation.max', {
+              field: t('message.menu.schoolManage.schoolName'),
+              max: 255
+            }),
+            trigger: 'blur'
+          }
+        ]
+      },
+      {
+        type: "combobox",
+        key: "schoolTypeId",
+        label: t('message.menu.schoolManage.schoolType'),
+        placeholder: t('message.menu.schoolManage.placeholder.select', {
+          field: t('message.menu.schoolManage.schoolType')
+        }),
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.schoolType')
+            }),
+            trigger: 'blur'
+          }
         ],
-        "span": 12
+        options: schoolTypeOptions.value.map(item => ({
+          label: item.code,
+          value: item.id
+        }))
       },
       {
-        "type": "text",
-        "key": "name",
-        "label": "Tên trường học",
-        "placeholder": "Nhập tên trường học",
-        "rules": [
-          { required: true, message: 'Tên trường học không được bỏ trống', trigger: 'blur' },
-          { max: 255, message: 'Tên trường học không được vượt quá 255 ký tự', trigger: 'blur' }
+        type: "combobox",
+        key: "workingOffsiteId",
+        label: t('message.menu.schoolManage.workingOffsite'),
+        placeholder: t('message.menu.schoolManage.placeholder.select', {
+          field: t('message.menu.schoolManage.workingOffsite')
+        }),
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.workingOffsite')
+            }),
+            trigger: 'blur'
+          }
         ],
-        "span": 12
+        options: workingOffsiteList.value.map(item => ({
+          label: item.code,
+          value: item.id
+        }))
       },
       {
-        "type": "combobox",
-        "key": "schoolTypeId",
-        "label": "Cấp học",
-        "placeholder": "Chọn cấp học",
-        "rules": [{ required: true, message: 'Cấp học không được bỏ trống', trigger: 'change' }],
-        "options": schoolTypeOptions.value.map(item => ({ label: item.name, value: item.id })),
-        "span": 12
-      },
-      {
-        "type": "combobox",
-        "key": "workingOffsiteId",
-        "label": "Working Offsite",
-        "placeholder": "Chọn nơi làm việc",
-        "options": workingOffsiteList.value.map(item => ({ label: item.name, value: item.id })),
-        "rules": [{ required: true, message: 'Working Offsite không được bỏ trống', trigger: 'change' }],
-        "span": 12
-      },
-      {
-        "type": "radio",
-        "key": "isPremium",
-        "label": "Premium School",
-        "options": [{ label: 'Có', value: 1 }, { label: 'Không', value: 0 }],
-        "defaultValue": 1,
-        "rules": [{ required: true, message: 'Premium School không được bỏ trống', trigger: 'change' }],
-        "span": 12
-      },
-      {
-        "type": "checkbox",
-        "key": "programs",
-        "label": "Chương trình",
-        "options": [
-          { label: "Toán", value: "Toán" },
-          { label: "Khoa học", value: "Khoa học" },
+        type: "radio",
+        key: "isPremium",
+        label: t('message.menu.schoolManage.isPremium'),
+        options: [
+          { label: t('message.menu.schoolManage.yes'), value: 1 },
+          { label: t('message.menu.schoolManage.no'), value: 0 }
         ],
-        "span": 12,
-        "defaultValue": [],
-        "rules": [{ type: 'array', required: true, message: 'Vui lòng chọn ít nhất một chương trình', trigger: 'change' }],
+        defaultValue: 1,
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.isPremium')
+            }),
+            trigger: 'blur'
+          }
+        ]
       },
       {
-        "type": "text",
-        "key": "mapLink",
-        "label": "Link bản đồ",
-        "placeholder": "Link bản đồ",
-        "rules": [
-          { required: true, message: 'Link bản đồ không được bỏ trống', trigger: 'blur' },
-          { max: 2000, message: 'Link bản đồ không được vượt quá 2000 ký tự', trigger: 'blur' }
+        type: "checkbox",
+        key: "programs",
+        label: t('message.menu.schoolManage.programs'),
+        options: [
+          { label: t('message.menu.schoolManage.programMath'), value: "Toán" },
+          { label: t('message.menu.schoolManage.programScience'), value: "Khoa học" }
         ],
-        "span": 12
+        defaultValue: [],
+        rules: [
+          {
+            type: 'array',
+            required: true,
+            message: t('message.menu.schoolManage.validation.minOneProgram'),
+            trigger: 'blur'
+          }
+        ]
       },
       {
-        "type": "text",
-        "key": "areaPhuong",
-        "label": "Khu vực (Phường)",
-        "placeholder": "Nhập khu vực Phường",
-        "rules": [
-          { required: true, message: 'Khu vực (Phường) không được bỏ trống', trigger: 'blur' },
-          { max: 255, message: 'Khu vực (Phường) không được vượt quá 255 ký tự', trigger: 'blur' }
-        ],
-        "span": 12
+        type: "text",
+        key: "map",
+        label: t('message.menu.schoolManage.map'),
+        placeholder: t('message.menu.schoolManage.placeholder.input', {
+          field: t('message.menu.schoolManage.map')
+        }),
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.map')
+            }),
+            trigger: 'blur'
+          },
+          {
+            max: 1000,
+            message: t('message.menu.schoolManage.validation.max', {
+              field: t('message.menu.schoolManage.map'),
+              max: 1000
+            }),
+            trigger: 'blur'
+          }
+        ]
       },
       {
-        "type": "text",
-        "key": "address",
-        "label": "Địa chỉ",
-        "placeholder": "Nhập địa chỉ",
-        "rules": [
-          { required: true, message: 'Địa chỉ không được bỏ trống', trigger: 'blur' },
-          { max: 500, message: 'Địa chỉ không được vượt quá 500 ký tự', trigger: 'blur' }
-        ],
-        "span": 12
+        type: "text",
+        key: "area",
+        label: t('message.menu.schoolManage.area'),
+        placeholder: t('message.menu.schoolManage.placeholder.input', {
+          field: t('message.menu.schoolManage.area')
+        }),
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.area')
+            }),
+            trigger: 'blur'
+          },
+          {
+            max: 255,
+            message: t('message.menu.schoolManage.validation.max', {
+              field: t('message.menu.schoolManage.area'),
+              max: 255
+            }),
+            trigger: 'blur'
+          }
+        ]
       },
       {
-        "type": "text",
-        "key": "areaCvct",
-        "label": "Khu vực theo CVCT",
-        "placeholder": "Nhập khu vực CVCT",
-        "rules": [
-          { required: true, message: 'Khu vực theo CVCT không được bỏ trống', trigger: 'blur' },
-          { max: 255, message: 'Khu vực theo CVCT không được vượt quá 255 ký tự', trigger: 'blur' }
-        ],
-        "span": 12
+        type: "text",
+        key: "address",
+        label: t('message.menu.schoolManage.address'),
+        placeholder: t('message.menu.schoolManage.placeholder.input', {
+          field: t('message.menu.schoolManage.address')
+        }),
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.address')
+            }),
+            trigger: 'blur'
+          },
+          {
+            max: 255,
+            message: t('message.menu.schoolManage.validation.max', {
+              field: t('message.menu.schoolManage.address'),
+              max: 255
+            }),
+            trigger: 'blur'
+          }
+        ]
       },
       {
-        "type": "text",
-        "key": "minuteNum",
-        "label": "Số phút chấm công/Số phút thực tế",
-        "placeholder": "Nhập số phút chấm công/số phút thực tế",
-        "rules": [
-          { required: true, message: 'Số phút không được bỏ trống', trigger: 'blur' },
-          { pattern: /^\d+$/, message: 'Số phút phải là số nguyên dương', trigger: 'blur' },
-          { max: 10, message: 'Số phút không được vượt quá 10 chữ số', trigger: 'blur' }
-        ],
-        "span": 12
+        type: "text",
+        key: "areaCvct",
+        label: t('message.menu.schoolManage.areaCvct'),
+        placeholder: t('message.menu.schoolManage.placeholder.input', {
+          field: t('message.menu.schoolManage.areaCvct')
+        }),
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.areaCvct')
+            }),
+            trigger: 'blur'
+          },
+          {
+            max: 255,
+            message: t('message.menu.schoolManage.validation.max', {
+              field: t('message.menu.schoolManage.areaCvct'),
+              max: 255
+            }),
+            trigger: 'blur'
+          }
+        ]
       },
       {
-        "type": "combobox",
-        "key": "rhta",
-        "label": "RHTA",
-        "placeholder": "Chọn RHTA",
-        "options": userList.value.map(item => ({ label: item.fullName || item.username, value: item.id })),
-        "rules": [{ required: true, message: 'RHTA không được bỏ trống', trigger: 'change' }],
-        "span": 8
+        type: "text",
+        key: "minuteNum",
+        label: t('message.menu.schoolManage.minuteNum'),
+        placeholder: t('message.menu.schoolManage.placeholder.input', {
+          field: t('message.menu.schoolManage.minuteNum')
+        }),
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.minuteNum')
+            }),
+            trigger: 'blur'
+          },
+          {
+            validator: (rule, value, callback) => {
+              if (!value) {
+                callback(new Error(t('message.menu.schoolManage.validation.required', {
+                  field: t('message.menu.schoolManage.minuteNum')
+                })));
+              } else if (!/^\d+$/.test(value)) {
+                callback(new Error(t('message.menu.schoolManage.validation.number', {
+                  field: t('message.menu.schoolManage.minuteNum')
+                })));
+              } else if (value.length < 1 || value.length > 10) {
+                callback(new Error(t('message.menu.schoolManage.validation.length', {
+                  field: t('message.menu.schoolManage.minuteNum'),
+                  min: 1,
+                  max: 10
+                })));
+              } else {
+                callback();
+              }
+            },
+            trigger: 'blur'
+          }
+        ]
       },
       {
-        "type": "combobox",
-        "key": "scheduler",
-        "label": "Scheduler",
-        "placeholder": "Chọn Scheduler",
-        "options": userList.value.map(item => ({ label: item.fullName || item.username, value: item.id })),
-        "rules": [{ required: true, message: 'Scheduler không được bỏ trống', trigger: 'change' }],
-        "span": 8
+        type: "combobox",
+        key: "rhtaId",
+        label: t('message.menu.schoolManage.rhta'),
+        placeholder: t('message.menu.schoolManage.placeholder.select', {
+          field: t('message.menu.schoolManage.rhta')
+        }),
+        options: userList.value.map(item => ({
+          label: item.username,
+          value: item.id
+        })),
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.rhta')
+            }),
+            trigger: 'blur'
+          }
+        ]
       },
       {
-        "type": "combobox",
-        "key": "schedulerCumTa",
-        "label": "Scheduler-cum-TA",
-        "placeholder": "Chọn Scheduler-cum-TA",
-        "options": userList.value.map(item => ({ label: item.fullName || item.username, value: item.id })),
-        "rules": [{ required: true, message: 'Scheduler-cum-TA không được bỏ trống', trigger: 'change' }],
-        "span": 8
+        type: "combobox",
+        key: "schedulerId",
+        label: t('message.menu.schoolManage.scheduler'),
+        placeholder: t('message.menu.schoolManage.placeholder.select', {
+          field: t('message.menu.schoolManage.scheduler')
+        }),
+        options: userList.value.map(item => ({
+          label: item.username,
+          value: item.id
+        })),
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.scheduler')
+            }),
+            trigger: 'blur'
+          }
+        ]
       },
       {
-        "type": "date",
-        "key": "startYear",
-        "label": "Năm học bắt đầu hợp tác",
-        "placeholder": "YYYY",
-        "format": "YYYY",
-        "valueFormat": "YYYY",
-        "rules": [{ required: true, message: 'Năm học bắt đầu hợp tác không được bỏ trống', trigger: 'change' }],
-        "span": 12
+        type: "combobox",
+        key: "schedulerCumTaId",
+        label: t('message.menu.schoolManage.schedulerCumTa'),
+        placeholder: t('message.menu.schoolManage.placeholder.select', {
+          field: t('message.menu.schoolManage.schedulerCumTa')
+        }),
+        options: userList.value.map(item => ({
+          label: item.username,
+          value: item.id
+        })),
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.schedulerCumTa')
+            }),
+            trigger: 'blur'
+          }
+        ]
       },
       {
-        "type": "text",
-        "key": "pacingGuides",
-        "label": "Pacing guides",
-        "placeholder": "Nhập Pacing guides",
-        "rules": [
-          { max: 255, message: 'Pacing guides không được vượt quá 255 ký tự', trigger: 'blur' }
-        ],
-        "span": 12
+        type: "date",
+        key: "startYear",
+        label: t('message.menu.schoolManage.startYear'),
+        placeholder: t('message.menu.schoolManage.placeholder.select', {
+          field: t('message.menu.schoolManage.startYear')
+        }),
+        format: "YYYY",
+        valueFormat: "DD/MM/YYYY",
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.startYear')
+            }),
+            trigger: 'change'
+          }
+        ]
       },
       {
-        "type": "combobox", // Giả định là combobox nếu có nhiều trạng thái
-        "key": "status",
-        "label": "Trạng thái",
-        "placeholder": "Chọn trạng thái",
-        "options": getStatusOptions(),
-        "defaultValue": 1,
-        "rules": [{ required: true, message: 'Trạng thái không được bỏ trống', trigger: 'change' }],
-        "span": 12
+        type: "combobox",
+        key: "status",
+        label: t('message.menu.schoolManage.status'),
+        placeholder: t('message.menu.schoolManage.placeholder.select', {
+          field: t('message.menu.schoolManage.status')
+        }),
+        defaultValue: 1,
+        options: getStatusOptions(),
+        rules: [
+          {
+            required: true,
+            message: t('message.menu.schoolManage.validation.required', {
+              field: t('message.menu.schoolManage.status')
+            }),
+            trigger: 'blur'
+          }
+        ]
       },
       {
-        "type": "textArea",
-        "key": "description",
-        "label": "Mô tả",
-        "placeholder": "Nhập mô tả",
-        "rows": 3,
-        "rules": [
-          { max: 1000, message: 'Mô tả không được vượt quá 1000 ký tự', trigger: 'blur' }
-        ],
-        "span": 24
+        type: "textArea",
+        key: "description",
+        label: t('message.menu.schoolManage.description'),
+        placeholder: t('message.menu.schoolManage.placeholder.input', {
+          field: t('message.menu.schoolManage.description')
+        }),
+        rows: 3,
+        rules: [
+          {
+            max: 1000,
+            message: t('message.menu.schoolManage.validation.max', {
+              field: t('message.menu.schoolManage.description'),
+              max: 1000
+            }),
+            trigger: 'blur'
+          }
+        ]
       },
-      {
-        "type": "upload",
-        "key": "schoolMapFiles",
-        "label": "Sơ đồ trường học",
-        "limit": 1,
-        "accept": ".png,.jpg,.jpeg,.pdf",
-        "multiple": false,
-        "showFileList": true,
-        "span": 24
-      }
+      // {
+      //   "type": "upload",
+      //   "key": "schoolDiagram",
+      //   "label": "Sơ đồ trường học",
+      //   "limit": 1,
+      //   "accept": ".png,.jpg,.jpeg,.pdf",
+      //   "multiple": false,
+      //   "showFileList": true,
+      // }
     ]
   }
 }));
@@ -454,17 +637,26 @@ const fetchSchoolData = async ({ filters, page, pageSize }: any) => {
     return {
       data: content.map((school: any) => ({
         ...school,
-        programs: typeof school.programs === 'string' ? school.programs.split(',').map((p: string) => p.trim()) : school.programs || [],
+        programs: typeof school.programs === 'string'
+            ? school.programs.split(',').map((p: string) => p.trim())
+            : school.programs || [],
       })),
       totalElements: response?.data?.data?.totalElements || 0,
       pageable: {
         pageNumber: (response.data.data.pageable?.pageNumber || 0) + 1,
         pageSize: response.data.data.pageable?.pageSize || pageSize,
-        totalPages: Math.ceil((response.data.data.totalElements || 0) / (response.data.data.pageable?.pageSize || pageSize)),
+        totalPages: Math.ceil(
+            (response.data.data.totalElements || 0) /
+            (response.data.data.pageable?.pageSize || pageSize)
+        ),
       },
     };
   } catch (error) {
-    ElNotification({ title: 'Lỗi', message: 'Không thể tải danh sách trường học.', type: 'error' });
+    ElNotification({
+      title: t('message.menu.common.err'),
+      message: t('message.menu.schoolManage.message.loadError'),
+      type: 'error',
+    });
     return {
       data: [],
       totalElements: 0,
@@ -474,95 +666,93 @@ const fetchSchoolData = async ({ filters, page, pageSize }: any) => {
 };
 
 const handleSchoolSaveOrUpdate = async (value: any) => {
+  isTableLoading.value = true;
   try {
-    console.log('[START] handleSchoolSaveOrUpdate - Input Value:', value);
-
     const dataToSend = {
       ...value,
       programs: Array.isArray(value.programs) ? value.programs.join(',') : '',
+      schoolDiagram:
+          Array.isArray(value.schoolDiagram) && value.schoolDiagram.length > 0
+              ? value.schoolDiagram[0].url || value.schoolDiagram[0].response?.url || ''
+              : '',
     };
 
-    console.log('[DATA TO SEND]', dataToSend);
-
     if (value.id) {
-      console.log('[UPDATE] Updating school with ID:', value.id);
       await updateSchool(dataToSend);
-      console.log('[UPDATE SUCCESS]');
-      // handleSuccess(`Cập nhật trường học "${value.name}" thành công!`);
-      ElMessage.success(`Cập nhật trường học "${value.name}" thành công!`);
+      ElMessage.success(t('message.menu.schoolManage.message.updateSuccess', { name: value.name }));
     } else {
-      console.log('[CREATE] Adding new school');
       await addSchool(dataToSend);
-      console.log('[CREATE SUCCESS]');
-      // handleSuccess(`Thêm trường học "${value.name}" thành công!`);
-      ElMessage.success(`Thêm trường học "${value.name}" thành công!`);
+      ElMessage.success(t('message.menu.schoolManage.message.addSuccess', { name: value.name }));
     }
 
-    console.log('[FETCH] Refreshing table data...');
     await fetchSchoolData({ filters: currentFilterQuery, page: 1, pageSize: 10 });
-    console.log('[FETCH SUCCESS]');
+    await nextTick();
   } catch (e) {
-    console.error('[ERROR] handleSchoolSaveOrUpdate failed:', e);
-    // handleErr('Có lỗi xảy ra khi lưu trường học.');
-    ElMessage.error('Có lỗi xảy ra khi lưu trường học.');
+    console.error('Lỗi khi lưu:', e);
+    ElMessage.error(t('message.menu.schoolManage.message.saveError'));
+  } finally {
+    isTableLoading.value = false;
   }
 };
 
-
-const handleSchoolDelete = async (
-    school: any,
-    refreshTable: () => void
-) => {
+const handleSchoolDelete = async (school: any) => {
   try {
-    await showConfirmDialog(
-        'Xóa',
-        'Xác nhận xóa',
-        `Bạn có chắc chắn muốn xóa trường học "${school.name}" không?`,
-        'Xác nhận xóa',
-        'Hủy'
-    );
-
     await deleteSchool(school.id);
+    ElMessage.success(t('message.menu.schoolManage.message.deleteSuccess', { name: school.name }));
 
-    handleSuccess(null, `Đã xóa trường học "${school.name}" thành công!`); // Đổi t thành null
-    refreshTable();
+    await fetchSchoolData({ filters: currentFilterQuery, page: 1, pageSize: 10 });
   } catch (error: any) {
-    if (error !== 'cancel') {
-      console.error('Delete error:', error);
-      handleErr(null, 'Có lỗi xảy ra khi xóa trường học.'); // Đổi t thành null
-    }
+    console.error('Delete error:', error);
+    ElMessage.error(t('message.menu.schoolManage.message.deleteError'));
   }
 };
 
-const handleSchoolImport = () => {
-  ElNotification({ title: 'Thông báo', message: 'Chức năng Import đang phát triển.', type: 'info' });
+const handleSchoolImport = async (formData: FormData) => {
+  try {
+    const response = await importSchoolExcel(formData.get('file'));
+
+    const contentType = response.type;
+
+    if (
+        contentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+        contentType === 'application/octet-stream'
+    ) {
+      return new Blob([response], { type: contentType });
+    }
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const handleSchoolExport = async () => {
   try {
-    const response = await exportSchoolExcel(currentFilterQuery);
+    const requestData = { ...currentFilterQuery };
+    const response = await exportSchoolExcel(requestData);
 
-    const blob = new Blob([response.data], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-
-    const url = window.URL.createObjectURL(blob);
+    const url = window.URL.createObjectURL(response.data);
     const link = document.createElement('a');
+    const fileName = 'report_school_' + new Date().getTime() + '.xlsx';
     link.href = url;
-
-    const timestamp = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 14);
-    link.download = `school_export_${timestamp}.xlsx`;
-
+    link.setAttribute('download', fileName);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
 
-    ElMessage.success('Xuất Excel thành công!');
-  } catch (error) {
-    ElMessage.error('Xuất Excel thất bại!');
+    ElMessage.success(t('message.menu.schoolManage.message.exportSuccess'));
+  } catch (error: any) {
+    if (error === 'cancel') {
+      ElMessage.info(t('message.menu.schoolManage.message.exportCancel'));
+    } else {
+      ElMessage.error(t('message.menu.schoolManage.message.exportFailed'));
+      console.error(error);
+    }
   }
 };
+
+
 
 onMounted(() => {
   loadSelectOptions();
@@ -570,9 +760,5 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.box {
-  padding: 20px;
-  background-color: #f5f7fa;
-  min-height: 100vh;
-}
+
 </style>

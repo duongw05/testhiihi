@@ -75,9 +75,10 @@
               <template v-else-if="field.type === 'date'">
                 <el-date-picker
                     v-model="formData[field.key]"
-                    type="date"
+                    type="year"
                     :placeholder="field.placeholder"
                     :format="field.format"
+                    :disabled="field.disabled || isViewMode"
                     :value-format="field.valueFormat"
                     :clearable="true"
                     popper-class="custom-date-picker-popper"
@@ -131,20 +132,18 @@
                 </el-checkbox-group>
               </template>
 
-              <!-- Upload -->
               <template v-else-if="field.type === 'upload'">
                 <el-upload
-                    :action="field.uploadAction || ''"
                     :limit="field.limit || 1"
-                    :disabled="field.disabled || isViewMode"
-                    :auto-upload="field.autoUpload !== false"
-                    :on-success="(res, file) => handleUploadSuccess(res, file, field.key)"
-                    :before-upload="field.beforeUpload"
                     :file-list="formData[field.key] || []"
+                    :auto-upload="false"
+                    :on-change="(file, fileList) => handleFileChange(file, fileList, field.key)"
+                    :on-remove="(file, fileList) => handleRemoveFile(file, fileList, field.key)"
+                    :show-file-list="true"
                     list-type="picture"
                 >
                   <el-button type="primary" size="default" :disabled="isViewMode">
-                    {{ field.buttonText || 'Tải lên' }}
+                    {{ field.buttonText || 'Chọn ảnh' }}
                   </el-button>
                 </el-upload>
               </template>
